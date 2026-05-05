@@ -1,0 +1,122 @@
+/**
+ * CrimeIn (/feed) — LinkedIn-inspired palette and typography.
+ * Scoped via .theme-crimein so story and other routes keep the default theme.
+ */
+
+/* Viewport fill when the shell uses min-h-svh (avoids default body color showing). */
+html:has(body.theme-crimein-body) {
+    height: 100svh;
+    overflow: hidden;
+}
+
+/* Single scroll region: center feed column — prevent document + feed both scrolling. */
+body.theme-crimein-body {
+    height: 100svh;
+    min-height: 100svh;
+    overflow: hidden;
+    background-color: oklch(0.97 0.004 85);
+}
+
+.dark body.theme-crimein-body {
+    background-color: oklch(0.22 0.02 250);
+}
+
+.theme-crimein {
+    --font-sans: "Source Sans 3 Variable", system-ui, sans-serif;
+    --font-heading: "Source Sans 3 Variable", system-ui, sans-serif;
+
+    --radius: 0.5rem;
+
+    /* Feed canvas — LinkedIn #f3f2ef-ish */
+    --background: oklch(0.97 0.004 85);
+    --foreground: oklch(0.28 0.02 250);
+
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.28 0.02 250);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.28 0.02 250);
+
+    /* LinkedIn primary blue ~#0a66c2 */
+    --primary: oklch(0.52 0.19 252);
+    --primary-foreground: oklch(0.99 0 0);
+
+    --secondary: oklch(0.94 0.01 250);
+    --secondary-foreground: oklch(0.32 0.03 250);
+
+    --muted: oklch(0.94 0.008 85);
+    --muted-foreground: oklch(0.48 0.02 250);
+
+    --accent: oklch(0.93 0.02 252);
+    --accent-foreground: oklch(0.35 0.08 252);
+
+    --destructive: oklch(0.55 0.22 25);
+    --border: oklch(0.88 0.01 250);
+    --input: oklch(0.88 0.01 250);
+    --ring: oklch(0.52 0.19 252);
+
+    --chart-1: oklch(0.52 0.19 252);
+    --chart-2: oklch(0.65 0.12 250);
+    --chart-3: oklch(0.45 0.08 250);
+    --chart-4: oklch(0.75 0.08 85);
+    --chart-5: oklch(0.55 0.15 200);
+
+    --sidebar: oklch(1 0 0);
+    --sidebar-foreground: oklch(0.28 0.02 250);
+    --sidebar-primary: oklch(0.52 0.19 252);
+    --sidebar-primary-foreground: oklch(0.99 0 0);
+    --sidebar-accent: oklch(0.94 0.01 250);
+    --sidebar-accent-foreground: oklch(0.32 0.03 250);
+    --sidebar-border: oklch(0.88 0.01 250);
+    --sidebar-ring: oklch(0.52 0.19 252);
+}
+
+/*
+ * @theme maps font-heading / font-sans to fixed families in generated utilities
+ * (e.g. .font-heading { font-family: Barrio, sans-serif }), so CrimeIn tokens
+ * alone do not apply. Re-map those utilities inside the shell.
+ */
+.theme-crimein :is(.font-sans, .font-heading) {
+    font-family: var(--font-sans);
+}
+
+.dark .theme-crimein {
+    --background: oklch(0.22 0.02 250);
+    --foreground: oklch(0.96 0.01 85);
+
+    --card: oklch(0.26 0.02 250);
+    --card-foreground: oklch(0.96 0.01 85);
+    --popover: oklch(0.26 0.02 250);
+    --popover-foreground: oklch(0.96 0.01 85);
+
+    --primary: oklch(0.68 0.16 252);
+    --primary-foreground: oklch(0.15 0.02 250);
+
+    --secondary: oklch(0.32 0.03 250);
+    --secondary-foreground: oklch(0.96 0.01 85);
+
+    --muted: oklch(0.32 0.03 250);
+    --muted-foreground: oklch(0.72 0.02 250);
+
+    --accent: oklch(0.32 0.05 252);
+    --accent-foreground: oklch(0.92 0.04 252);
+
+    --destructive: oklch(0.62 0.2 25);
+    --border: oklch(1 0 0 / 12%);
+    --input: oklch(1 0 0 / 14%);
+    --ring: oklch(0.68 0.16 252);
+
+    --chart-1: oklch(0.68 0.16 252);
+    --chart-2: oklch(0.62 0.1 250);
+    --chart-3: oklch(0.72 0.08 200);
+    --chart-4: oklch(0.58 0.12 85);
+    --chart-5: oklch(0.55 0.14 160);
+
+    --sidebar: oklch(0.24 0.02 250);
+    --sidebar-foreground: oklch(0.96 0.01 85);
+    --sidebar-primary: oklch(0.68 0.16 252);
+    --sidebar-primary-foreground: oklch(0.15 0.02 250);
+    --sidebar-accent: oklch(0.32 0.03 250);
+    --sidebar-accent-foreground: oklch(0.96 0.01 85);
+    --sidebar-border: oklch(1 0 0 / 12%);
+    --sidebar-ring: oklch(0.68 0.16 252);
+}
