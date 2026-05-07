@@ -1,14 +1,17 @@
 import { createFileRoute } from '@tanstack/react-router'
 
+import { StartScreenFrame } from '~/features/introduction/introduction-frame'
+import { TerminalFrame } from '~/features/terminal/terminal-frame'
+import { useStoryPhaseStore } from '~/stores/story-phase-store'
+
 export const Route = createFileRoute('/')({ component: Home })
 
 function Home() {
-  return (
-    <div className="p-8">
-      <h1 className="text-4xl font-bold">Welcome to TanStack Start</h1>
-      <p className="mt-4 text-lg">
-        Edit <code>src/routes/index.tsx</code> to get started.
-      </p>
-    </div>
-  )
+  const phase = useStoryPhaseStore((state) => state.phase)
+
+  if (phase === 'start-screen') {
+    return <StartScreenFrame />
+  }
+
+  return <TerminalFrame />
 }
