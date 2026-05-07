@@ -14,6 +14,18 @@ const MAP_ICON_URLS = [
 ] as const
 
 const FULL_NARRATIVE_IMAGE_URL = '/images/full-narrative.png'
+const FIGHT_AUDIO_URLS = [
+  '/fight/round.mp3',
+  '/fight/1.mp3',
+  '/fight/two.mp3',
+  '/fight/3.mp3',
+  '/fight/fight.mp3',
+  '/fight/how-dare-you.mp3',
+  '/fight/huh-throw.mp3',
+  '/fight/chun-li-grunt.mp3',
+  '/fight/putin-called-me-a-genius.mp3',
+  '/fight/Missile.mp3',
+] as const
 
 type Cache = Map<string, Promise<unknown>>
 const cache: Cache = new Map()
@@ -44,6 +56,36 @@ function loadImage(url: string): Promise<HTMLImageElement> {
   return promise
 }
 
+function loadAudio(url: string): Promise<void> {
+  const existing = cache.get(url)
+  if (existing) return existing as Promise<void>
+
+  const promise = new Promise<void>((resolve, reject) => {
+    const audio = new Audio()
+    const cleanup = () => {
+      audio.removeEventListener('canplaythrough', onReady)
+      audio.removeEventListener('error', onError)
+    }
+    const onReady = () => {
+      cleanup()
+      resolve()
+    }
+    const onError = () => {
+      cleanup()
+      reject(new Error(`Failed to load audio ${url}`))
+    }
+
+    audio.preload = 'auto'
+    audio.addEventListener('canplaythrough', onReady, { once: true })
+    audio.addEventListener('error', onError, { once: true })
+    audio.src = url
+    audio.load()
+  })
+
+  cache.set(url, promise)
+  return promise
+}
+
 export type StoryAssets = {
   conflictEvents: unknown
   propellantPrices: unknown
@@ -66,6 +108,10 @@ export async function preloadStoryAssets(
       run: () => loadImage(url),
     })),
     { label: 'Narrative artwork', run: () => loadImage(FULL_NARRATIVE_IMAGE_URL) },
+    ...FIGHT_AUDIO_URLS.map((url) => ({
+      label: `Audio ${url.split('/').pop() ?? url}`,
+      run: () => loadAudio(url),
+    })),
   ]
 
   storyAssetsPromise = (async () => {

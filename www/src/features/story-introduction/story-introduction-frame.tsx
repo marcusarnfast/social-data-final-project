@@ -5,6 +5,7 @@ import type { RefObject } from 'react'
 
 import { CHAPTERS, STORY_END, STORY_START } from './chapters'
 import type { Chapter } from './chapters'
+import { FightScrollStage } from './fight-scroll-stage'
 import { FULL_NARRATIVE_IMAGE_URL } from './preload-story-assets'
 import { StoryChapterModal } from './story-chapter-modal'
 import { StoryMap } from './story-map'
@@ -67,6 +68,9 @@ export function StoryIntroductionFrame() {
   const [vehicleProgress, setVehicleProgress] = useState(0)
   const mapDidCompleteRef = useRef(false)
   const vehicleDidCompleteRef = useRef(false)
+  const handleFightComplete = useCallback(() => {
+    completeFightIntro()
+  }, [completeFightIntro])
 
   const scrollNarrativeToProgress = useCallback((progress: number) => {
     const section = narrativeRef.current
@@ -159,7 +163,7 @@ export function StoryIntroductionFrame() {
   }, [handleVehicleComplete, storyMode])
 
   useEffect(() => {
-    const shouldLockRootScroll = storyMode !== 'narrative-scroll'
+    const shouldLockRootScroll = storyMode === 'map-panel' || storyMode === 'vehicle-panel'
     const previousOverflow = document.body.style.overflow
     const previousOverscroll = document.body.style.overscrollBehaviorY
     document.body.style.overflow = shouldLockRootScroll ? 'hidden' : ''
@@ -218,7 +222,7 @@ export function StoryIntroductionFrame() {
   }, [enterMapPanel, enterVehiclePanel, mapCompleted, storyMode, vehicleCompleted])
 
   if (storyMode === 'fight-intro') {
-    return <FightSceneFrame onComplete={completeFightIntro} />
+    return <FightScrollStage onComplete={handleFightComplete} />
   }
 
   return (
@@ -261,45 +265,6 @@ export function StoryIntroductionFrame() {
         <VehiclePanelOverlay containerRef={vehicleScrollRef} progress={vehicleProgress} />
       ) : null}
     </main>
-  )
-}
-
-function FightSceneFrame({ onComplete }: { onComplete: () => void }) {
-  return (
-    <section className="relative flex h-svh w-full items-end justify-center overflow-hidden bg-black px-6 pb-8">
-      <img
-        src={FULL_NARRATIVE_IMAGE_URL}
-        alt="Desolate Earth battlefield background"
-        className="absolute inset-0 h-full w-full object-cover object-top opacity-90"
-      />
-      <div className="absolute inset-0 bg-linear-to-b from-black/10 via-black/40 to-black/70" />
-
-      <div className="relative z-10 grid w-full max-w-6xl grid-cols-2 items-end gap-8">
-        <img
-          src="/start-screen/trump.png"
-          alt="Donald Trump fighter"
-          className="h-[42vh] w-full object-contain object-bottom drop-shadow-[0_16px_24px_rgba(0,0,0,0.65)]"
-        />
-        <img
-          src="/start-screen/greta.png"
-          alt="Greta Thunberg fighter"
-          className="h-[42vh] w-full scale-x-[-1] object-contain object-bottom drop-shadow-[0_16px_24px_rgba(0,0,0,0.65)]"
-        />
-      </div>
-
-      <div className="absolute bottom-8 left-1/2 z-20 flex -translate-x-1/2 flex-col items-center gap-3 text-center">
-        <p className="font-mono text-[11px] uppercase tracking-[0.24em] text-amber-200/90">
-          final clash
-        </p>
-        <button
-          type="button"
-          onClick={onComplete}
-          className="border border-red-400 bg-black/60 px-7 py-2 font-mono text-xs uppercase tracking-[0.2em] text-red-100 transition hover:bg-red-950/45"
-        >
-          Finish Him
-        </button>
-      </div>
-    </section>
   )
 }
 

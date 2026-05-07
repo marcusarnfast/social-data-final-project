@@ -9,12 +9,17 @@ type TrackId = keyof typeof TRACKS
 type TrackState = { id: TrackId; audio: HTMLAudioElement }
 
 const BASE_VOLUME = 0.35
+let backgroundMusicGain = 1
 
 let backgroundMusicMuted = false
 let hasPrimedAutoplay = false
 let hasUserInteracted = false
 let activeTrack: TrackState | null = null
 let transitionToken = 0
+
+function getEffectiveVolume() {
+  return BASE_VOLUME * backgroundMusicGain
+}
 
 function ensureTrack(id: TrackId): TrackState {
   if (activeTrack?.id === id) {
@@ -24,7 +29,7 @@ function ensureTrack(id: TrackId): TrackState {
 
   const audio = new Audio(TRACKS[id])
   audio.loop = true
-  audio.volume = BASE_VOLUME
+  audio.volume = getEffectiveVolume()
   audio.muted = backgroundMusicMuted
   return { id, audio }
 }
@@ -32,7 +37,7 @@ function ensureTrack(id: TrackId): TrackState {
 export async function playTrack(id: TrackId) {
   const track = ensureTrack(id)
   activeTrack = track
-  track.audio.volume = BASE_VOLUME
+  track.audio.volume = getEffectiveVolume()
 
   await track.audio.play().catch(() => {
     // Ignore playback errors from restrictive browser policies.
@@ -75,8 +80,9 @@ export async function transitionToTrack(
     const elapsed = Date.now() - startedAt
     const progress = Math.min(1, elapsed / durationMs)
 
-    current.audio.volume = BASE_VOLUME * (1 - progress)
-    next.audio.volume = BASE_VOLUME * progress
+    const effectiveVolume = getEffectiveVolume()
+    current.audio.volume = effectiveVolume * (1 - progress)
+    next.audio.volume = effectiveVolume * progress
 
     if (progress < 1) {
       window.requestAnimationFrame(tick)
@@ -134,5 +140,12 @@ export function setBackgroundMusicMuted(nextMuted: boolean) {
   backgroundMusicMuted = nextMuted
   if (activeTrack) {
     activeTrack.audio.muted = nextMuted
+  }
+}
+
+export function setBackgroundMusicGain(nextGain: number) {
+  backgroundMusicGain = Math.min(1, Math.max(0, nextGain))
+  if (activeTrack) {
+    activeTrack.audio.volume = getEffectiveVolume()
   }
 }
