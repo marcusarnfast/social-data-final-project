@@ -1,25 +1,21 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect } from 'react'
 
 import { Button } from '~/components/ui/8bit/button'
 import {
-  getBackgroundMusicMuted,
-  primeBackgroundMusicForAutoplay,
-  toggleBackgroundMusicMuted,
+  getBackgroundMusicInteracted,
+  primeCurrentTrackForAutoplay,
 } from '~/features/audio/background-music'
-import { useStoryPhaseStore } from '~/stores/story-phase-store'
 
-export function StartScreenFrame() {
-  const nextPhase = useStoryPhaseStore((state) => state.nextPhase)
-  const [isMuted, setIsMuted] = useState(() => getBackgroundMusicMuted())
-
+export function StartScreenFrame({ onStart }: { onStart: () => void }) {
   const handleStart = useCallback(() => {
-    nextPhase()
-  }, [nextPhase])
+    onStart()
+  }, [onStart])
 
   useEffect(() => {
-    primeBackgroundMusicForAutoplay()
+    if (getBackgroundMusicInteracted()) return
+    void primeCurrentTrackForAutoplay()
   }, [])
 
   useEffect(() => {
@@ -65,18 +61,6 @@ export function StartScreenFrame() {
           alt="New game"
           className="pixelated intro-new-game w-[min(68vw,560px)]"
         />
-      </div>
-
-      <div className="absolute right-4 top-4 z-40">
-        <Button
-          type="button"
-          font="retro"
-          variant="secondary"
-          onClick={() => setIsMuted(toggleBackgroundMusicMuted())}
-          aria-label={isMuted ? 'Unmute music' : 'Mute music'}
-        >
-          {isMuted ? 'Unmute' : 'Mute'}
-        </Button>
       </div>
 
       <div className="absolute inset-x-0 bottom-[14vh] z-30 flex items-center justify-center px-6">

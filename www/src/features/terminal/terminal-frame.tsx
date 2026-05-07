@@ -2,8 +2,11 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-import { startBackgroundMusic } from '~/features/audio/background-music'
-import { useStoryPhaseStore } from '~/stores/story-phase-store'
+import {
+  markBackgroundMusicInteracted,
+  playTrack,
+  setBackgroundMusicMuted,
+} from '~/features/audio/background-music'
 
 const NARRATIVE_SEQUENCE = [
   { text: 'C:\\>CD social_data_final_project', delay: 180, mode: 'instant' },
@@ -109,8 +112,13 @@ function TypewriterLine({
       if (isPausePunctuation) typingDelay += 16 + Math.random() * 30
       if (isStutter) typingDelay += 18 + Math.random() * 34
 
+      const nextSliceLength = Math.min(
+        text.length,
+        displayedText.length + (isWhitespace || isPausePunctuation ? 1 : 2),
+      )
+
       const timeout = window.setTimeout(() => {
-        setDisplayedText(text.slice(0, displayedText.length + 1))
+        setDisplayedText(text.slice(0, nextSliceLength))
       }, typingDelay)
 
       return () => window.clearTimeout(timeout)
@@ -166,8 +174,7 @@ function LoadingDotsLine({
   )
 }
 
-export function TerminalFrame() {
-  const nextPhase = useStoryPhaseStore((state) => state.nextPhase)
+export function TerminalFrame({ onContinue }: { onContinue: () => void }) {
   const [lines, setLines] = useState<TerminalLine[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isComplete, setIsComplete] = useState(false)
@@ -243,34 +250,37 @@ export function TerminalFrame() {
       if (event.key !== 'Enter') return
 
       event.preventDefault()
-      startBackgroundMusic()
-      nextPhase()
+      markBackgroundMusicInteracted()
+      setBackgroundMusicMuted(false)
+      void playTrack('street-fighter')
+      onContinue()
     }
 
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [isComplete, nextPhase])
+  }, [isComplete, onContinue])
 
   return (
-    <section className="relative flex min-h-svh items-center justify-center bg-black p-8">
+    <section
+      className="relative flex min-h-svh items-center justify-center overflow-hidden bg-black p-8"
+      style={{ cursor: 'url("/cursor/ketamine.PNG") 12 12, auto' }}
+    >
       <div className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
         <div
-          className="h-[900px] w-[1400px]"
+          className="h-[760px] w-[1200px]"
           style={{
             background:
-              'radial-gradient(ellipse 90% 80% at center, rgba(51, 255, 51, 0.15) 0%, rgba(51, 255, 51, 0.08) 20%, rgba(51, 255, 51, 0.03) 45%, transparent 75%)',
-            filter: 'blur(80px)',
+              'radial-gradient(ellipse 90% 80% at center, rgba(51, 255, 51, 0.12) 0%, rgba(51, 255, 51, 0.06) 24%, rgba(51, 255, 51, 0.02) 48%, transparent 72%)',
           }}
         />
       </div>
 
       <div className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
         <div
-          className="h-[600px] w-[900px]"
+          className="h-[480px] w-[760px]"
           style={{
             background:
-              'radial-gradient(ellipse 70% 60% at center, rgba(51, 255, 51, 0.12) 0%, rgba(51, 255, 51, 0.05) 35%, transparent 65%)',
-            filter: 'blur(40px)',
+              'radial-gradient(ellipse 70% 60% at center, rgba(51, 255, 51, 0.09) 0%, rgba(51, 255, 51, 0.04) 35%, transparent 65%)',
           }}
         />
       </div>
@@ -292,6 +302,7 @@ export function TerminalFrame() {
               'linear-gradient(transparent 0%, rgba(51, 255, 51, 0.15) 50%, transparent 100%)',
             backgroundSize: '100% 8px',
             animation: 'scanline 8s linear infinite',
+            willChange: 'transform',
           }}
         />
 
@@ -324,8 +335,9 @@ export function TerminalFrame() {
             ref={viewportRef}
             className="scrollbar-hide h-full overflow-y-auto pr-4 font-mono text-xs leading-relaxed"
             style={{
-              textShadow:
-                '0 0 12px rgba(51, 255, 51, 1), 0 0 24px rgba(51, 255, 51, 0.6), 0 0 48px rgba(51, 255, 51, 0.35), 0 0 80px rgba(51, 255, 51, 0.2)',
+              textShadow: '0 0 6px rgba(51, 255, 51, 0.45)',
+              contain: 'content',
+              willChange: 'scroll-position',
             }}
           >
             {lines.map((line) => (

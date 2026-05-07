@@ -1,0 +1,155 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "id": "syria-2016", "date": "2016-03-15", "region": "Middle East", "label": "Syria – Aleppo offensive", "intensity": 3 },
+      "geometry": { "type": "Point", "coordinates": [37.16, 36.20] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "iraq-2016", "date": "2016-10-17", "region": "Middle East", "label": "Iraq – Mosul operation begins", "intensity": 3 },
+      "geometry": { "type": "Point", "coordinates": [43.13, 36.34] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "yemen-2016", "date": "2016-08-09", "region": "Middle East", "label": "Yemen – Saudi-led airstrikes intensify", "intensity": 2 },
+      "geometry": { "type": "Point", "coordinates": [44.19, 15.36] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "ukraine-donbas-2017", "date": "2017-02-04", "region": "Europe", "label": "Ukraine – Avdiivka clashes", "intensity": 2 },
+      "geometry": { "type": "Point", "coordinates": [37.74, 48.13] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "afghanistan-2017", "date": "2017-04-13", "region": "Asia", "label": "Afghanistan – MOAB strike on Nangarhar", "intensity": 3 },
+      "geometry": { "type": "Point", "coordinates": [70.44, 34.42] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "korea-2017", "date": "2017-09-03", "region": "Asia", "label": "North Korea – nuclear test", "intensity": 3 },
+      "geometry": { "type": "Point", "coordinates": [129.08, 41.30] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "syria-douma-2018", "date": "2018-04-07", "region": "Middle East", "label": "Syria – Douma chemical attack", "intensity": 3 },
+      "geometry": { "type": "Point", "coordinates": [36.40, 33.57] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "gaza-2018", "date": "2018-05-14", "region": "Middle East", "label": "Gaza – border protests", "intensity": 2 },
+      "geometry": { "type": "Point", "coordinates": [34.39, 31.51] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "venezuela-2019", "date": "2019-04-30", "region": "Latin America", "label": "Venezuela – Caracas uprising", "intensity": 2 },
+      "geometry": { "type": "Point", "coordinates": [-66.91, 10.49] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "hong-kong-2019", "date": "2019-08-18", "region": "Asia", "label": "Hong Kong – pro-democracy protests", "intensity": 2 },
+      "geometry": { "type": "Point", "coordinates": [114.17, 22.32] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "iran-soleimani-2020", "date": "2020-01-03", "region": "Middle East", "label": "Iraq – Soleimani strike at Baghdad", "intensity": 3 },
+      "geometry": { "type": "Point", "coordinates": [44.23, 33.26] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "libya-2020", "date": "2020-06-04", "region": "Africa", "label": "Libya – Tripoli offensive", "intensity": 2 },
+      "geometry": { "type": "Point", "coordinates": [13.19, 32.88] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "ethiopia-tigray-2020", "date": "2020-11-04", "region": "Africa", "label": "Ethiopia – Tigray war begins", "intensity": 3 },
+      "geometry": { "type": "Point", "coordinates": [38.75, 13.49] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "myanmar-2021", "date": "2021-02-01", "region": "Asia", "label": "Myanmar – military coup", "intensity": 3 },
+      "geometry": { "type": "Point", "coordinates": [96.16, 16.81] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "kabul-2021", "date": "2021-08-15", "region": "Asia", "label": "Afghanistan – fall of Kabul", "intensity": 3 },
+      "geometry": { "type": "Point", "coordinates": [69.21, 34.53] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "ukraine-kyiv-2022", "date": "2022-02-24", "region": "Europe", "label": "Ukraine – Russian invasion", "intensity": 3 },
+      "geometry": { "type": "Point", "coordinates": [30.52, 50.45] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "ukraine-mariupol-2022", "date": "2022-04-21", "region": "Europe", "label": "Ukraine – siege of Mariupol", "intensity": 3 },
+      "geometry": { "type": "Point", "coordinates": [37.55, 47.10] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "ukraine-kherson-2022", "date": "2022-11-11", "region": "Europe", "label": "Ukraine – Kherson liberated", "intensity": 2 },
+      "geometry": { "type": "Point", "coordinates": [32.61, 46.64] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "iran-protests-2022", "date": "2022-09-22", "region": "Middle East", "label": "Iran – Mahsa Amini protests", "intensity": 2 },
+      "geometry": { "type": "Point", "coordinates": [51.39, 35.69] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "sudan-2023", "date": "2023-04-15", "region": "Africa", "label": "Sudan – RSF / SAF civil war", "intensity": 3 },
+      "geometry": { "type": "Point", "coordinates": [32.55, 15.50] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "israel-gaza-2023", "date": "2023-10-07", "region": "Middle East", "label": "Israel – Hamas attack", "intensity": 3 },
+      "geometry": { "type": "Point", "coordinates": [34.48, 31.50] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "lebanon-2023", "date": "2023-10-09", "region": "Middle East", "label": "Lebanon – Hezbollah front opens", "intensity": 2 },
+      "geometry": { "type": "Point", "coordinates": [35.30, 33.16] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "houthi-redsea-2024", "date": "2024-01-12", "region": "Middle East", "label": "Red Sea – Houthi attacks on shipping", "intensity": 3 },
+      "geometry": { "type": "Point", "coordinates": [42.50, 14.50] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "iran-strikes-2024", "date": "2024-04-13", "region": "Middle East", "label": "Iran – direct strikes on Israel", "intensity": 3 },
+      "geometry": { "type": "Point", "coordinates": [35.00, 32.00] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "ukraine-kursk-2024", "date": "2024-08-06", "region": "Europe", "label": "Russia – Kursk incursion", "intensity": 2 },
+      "geometry": { "type": "Point", "coordinates": [36.19, 51.73] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "syria-fall-2024", "date": "2024-12-08", "region": "Middle East", "label": "Syria – fall of Assad regime", "intensity": 3 },
+      "geometry": { "type": "Point", "coordinates": [36.30, 33.51] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "hormuz-blockade-2025", "date": "2025-06-22", "region": "Middle East", "label": "Strait of Hormuz – blockade", "intensity": 3 },
+      "geometry": { "type": "Point", "coordinates": [56.25, 26.57] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "gulf-tankers-2025", "date": "2025-07-04", "region": "Middle East", "label": "Persian Gulf – tanker incidents", "intensity": 3 },
+      "geometry": { "type": "Point", "coordinates": [51.80, 26.10] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "taiwan-strait-2025", "date": "2025-09-15", "region": "Asia", "label": "Taiwan Strait – escalation", "intensity": 2 },
+      "geometry": { "type": "Point", "coordinates": [120.00, 24.00] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "sahel-2025", "date": "2025-11-02", "region": "Africa", "label": "Sahel – coordinated jihadist offensive", "intensity": 2 },
+      "geometry": { "type": "Point", "coordinates": [2.12, 13.51] }
+    }
+  ]
+}
