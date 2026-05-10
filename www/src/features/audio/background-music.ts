@@ -44,6 +44,14 @@ export async function playTrack(id: TrackId) {
   })
 }
 
+export function stopBackgroundMusic() {
+  transitionToken += 1
+  if (!activeTrack) return
+  activeTrack.audio.pause()
+  activeTrack.audio.currentTime = 0
+  activeTrack = null
+}
+
 export async function transitionToTrack(
   id: TrackId,
   options: {

@@ -13,6 +13,8 @@ import {
   YAxis,
 } from 'recharts'
 
+import '~/components/ui/8bit/styles/retro.css'
+
 import { CHAPTERS, STORY_END, STORY_START } from './chapters'
 import { getPropellantPrices } from './preload-story-assets'
 
@@ -33,7 +35,14 @@ function formatMonthYear(ts: number): string {
   return `${d.toLocaleString('en-US', { month: 'short', timeZone: 'UTC' })} ${d.getUTCFullYear()}`
 }
 
-export function StoryTimeline({ currentDate }: { currentDate: Date }) {
+export function StoryTimeline({
+  currentDate,
+  variant = 'default',
+}: {
+  currentDate: Date
+  variant?: 'default' | 'retro'
+}) {
+  const isRetro = variant === 'retro'
   const [data, setData] = useState<ReadonlyArray<PriceRow>>([])
 
   useEffect(() => {
@@ -59,15 +68,35 @@ export function StoryTimeline({ currentDate }: { currentDate: Date }) {
   const currentTs = currentDate.getTime()
 
   return (
-    <div className="flex h-full w-full flex-col bg-black px-6 py-3 text-amber-200">
+    <div
+      className={
+        isRetro
+          ? 'retro flex h-full w-full flex-col border-t-[6px] border-amber-200 bg-black px-6 py-3 text-amber-200'
+          : 'flex h-full w-full flex-col bg-black px-6 py-3 text-amber-200'
+      }
+    >
       <div className="mb-1 flex shrink-0 items-baseline justify-between">
-        <h2 className="font-mono text-[10px] uppercase tracking-[0.2em] text-amber-400/80">
+        <h2
+          className={
+            isRetro
+              ? 'text-[8px] uppercase tracking-[0.22em] text-amber-300'
+              : 'font-mono text-[10px] uppercase tracking-[0.2em] text-amber-400/80'
+          }
+        >
           DK fuel price (DKK / liter)
         </h2>
-        <span className="font-mono text-xs text-amber-200">{formatMonthYear(currentTs)}</span>
+        <span
+          className={
+            isRetro
+              ? 'text-[10px] uppercase tracking-[0.18em] text-amber-200'
+              : 'font-mono text-xs text-amber-200'
+          }
+        >
+          {formatMonthYear(currentTs)}
+        </span>
       </div>
-      <div className="min-h-0 flex-1">
-        <ResponsiveContainer width="100%" height="100%">
+      <div className="min-h-0 min-w-0 flex-1">
+        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
         <LineChart data={data} margin={{ top: 8, right: 16, bottom: 28, left: 4 }}>
           <CartesianGrid stroke="#3f2d18" strokeDasharray="3 3" vertical={false} />
           <XAxis
@@ -123,18 +152,20 @@ export function StoryTimeline({ currentDate }: { currentDate: Date }) {
             name="diesel"
           />
 
-          {CHAPTERS.map((chapter) => (
-            <ReferenceDot
-              key={chapter.id}
-              x={chapter.time.getTime()}
-              y={9}
-              r={4}
-              fill="#ef4444"
-              stroke="#fef3c7"
-              strokeWidth={1}
-              ifOverflow="visible"
-            />
-          ))}
+          {isRetro
+            ? null
+            : CHAPTERS.map((chapter) => (
+                <ReferenceDot
+                  key={chapter.id}
+                  x={chapter.time.getTime()}
+                  y={9}
+                  r={4}
+                  fill="#ef4444"
+                  stroke="#fef3c7"
+                  strokeWidth={1}
+                  ifOverflow="visible"
+                />
+              ))}
 
           <ReferenceLine
             x={currentTs}

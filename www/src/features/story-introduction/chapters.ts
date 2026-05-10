@@ -47,7 +47,7 @@ export const CHAPTERS: ReadonlyArray<Chapter> = [
     mapView: { center: [33.0, 48.5], zoom: 4.2, pitch: 35, bearing: -10 },
     title: 'Russia / Ukraine war',
     description:
-      'The conflict starts in 2014 with Russia annexing Crimea, then escalates into a full-scale invasion in February 2022. European energy security breaks open and oil spikes sharply.',
+      'It starts in 2014 with Russia annexing Crimea. It escalates into a full invasion in February 2022. Europe loses its biggest gas supplier overnight, and the shock travels straight into pumps across the continent — a huge impact on fuel prices, with diesel and petrol spiking to record highs in Denmark and beyond.',
     chart: {
       type: 'bar',
       yLabel: 'Oil price ($ / barrel)',
