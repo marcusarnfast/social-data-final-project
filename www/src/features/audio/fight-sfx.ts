@@ -5,9 +5,12 @@ import { setBackgroundMusicGain } from './background-music'
 type CueOptions = {
   volume?: number
   duckMusicTo?: number
+  /** When true, clip is not stopped by `stopFightSfx()` (frame changes); stops on end or `stopAllFightSfx()`. */
+  continuePastFrame?: boolean
 }
 
 const activeSfx = new Set<HTMLAudioElement>()
+const persistingSfx = new Set<HTMLAudioElement>()
 let duckToken = 0
 
 export function stopFightSfx() {
@@ -18,8 +21,18 @@ export function stopFightSfx() {
   activeSfx.clear()
 }
 
+/** Stops one-shot and persisting fight clips (e.g. fight scene teardown). */
+export function stopAllFightSfx() {
+  stopFightSfx()
+  for (const audio of persistingSfx) {
+    audio.pause()
+    audio.currentTime = 0
+  }
+  persistingSfx.clear()
+}
+
 export async function playFightCue(src: string, options: CueOptions = {}) {
-  const { volume = 1, duckMusicTo } = options
+  const { volume = 1, duckMusicTo, continuePastFrame } = options
   const clip = new Audio(src)
   clip.volume = Math.min(1, Math.max(0, volume))
   clip.preload = 'auto'
@@ -29,9 +42,10 @@ export async function playFightCue(src: string, options: CueOptions = {}) {
     setBackgroundMusicGain(Math.min(1, Math.max(0, duckMusicTo)))
   }
 
-  activeSfx.add(clip)
+  const bucket = continuePastFrame ? persistingSfx : activeSfx
+  bucket.add(clip)
   const clear = () => {
-    activeSfx.delete(clip)
+    bucket.delete(clip)
     if (typeof duckMusicTo === 'number' && token === duckToken) {
       setBackgroundMusicGain(1)
     }

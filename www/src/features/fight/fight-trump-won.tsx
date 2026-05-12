@@ -66,6 +66,7 @@ function TrumpWonStamp() {
   )
 }
 
+
 function Marquee({ text }: { text: string }) {
   return (
     <div className="absolute bottom-[6%] inset-x-0 overflow-hidden border-y-[6px] border-amber-200 bg-black/85">

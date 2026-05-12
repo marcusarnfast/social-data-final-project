@@ -5,11 +5,15 @@ import { useCallback, useEffect } from 'react'
 import { Button } from '~/components/ui/8bit/button'
 import {
   getBackgroundMusicInteracted,
+  markBackgroundMusicInteracted,
   primeCurrentTrackForAutoplay,
+  setBackgroundMusicMuted,
 } from '~/features/audio/background-music'
 
 export function StartScreenFrame({ onStart }: { onStart: () => void }) {
   const handleStart = useCallback(() => {
+    markBackgroundMusicInteracted()
+    setBackgroundMusicMuted(false)
     onStart()
   }, [onStart])
 

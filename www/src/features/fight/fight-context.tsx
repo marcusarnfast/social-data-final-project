@@ -98,6 +98,8 @@ export type FightContextValue = {
   captions: ReadonlyArray<string>
   normalizedFrameProgress: number
   registerGestureDelegate: (delegate: FightGestureDelegate | null) => void
+  /** Smooth-scroll the fight section to a frame index (clamped). For overlays that need to advance programmatically. */
+  goToFightFrame: (nextFrameIndex: number) => void
 }
 
 const FightContext = createContext<FightContextValue | null>(null)
@@ -334,8 +336,9 @@ export function FightProvider({ children, onComplete }: FightProviderProps) {
       captions,
       normalizedFrameProgress,
       registerGestureDelegate,
+      goToFightFrame: commitFrame,
     }
-  }, [frameCount, frameIndex, previousFrameIndex, registerGestureDelegate])
+  }, [commitFrame, frameCount, frameIndex, previousFrameIndex, registerGestureDelegate])
 
   useEffect(() => {
     const cb = onCompleteRef.current

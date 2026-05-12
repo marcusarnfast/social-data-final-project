@@ -59,7 +59,7 @@ export function MapDataAvailabilityDialog({
             className={cn('text-balance text-amber-200', !isRetro && 'font-mono')}
           >
             {isRetro ? (
-              <span className="text-[10px] uppercase tracking-[0.12em]">Map data coverage</span>
+              <span className="text-[10px] uppercase tracking-[0.12em]">Number of conflicts per year by continent</span>
             ) : (
               <span className="text-sm uppercase tracking-[0.14em]">Map data coverage</span>
             )}
@@ -73,14 +73,8 @@ export function MapDataAvailabilityDialog({
           >
             <div>
               <p className="mb-3">
-                Conflict markers come from event datasets that are <strong className="text-amber-200">incomplete by
-                  nature</strong>: not every incident is coded, coverage shifts by source and year, and quieter
-                regions can look “clean” on the map even when risk or prices move for other reasons.
-              </p>
-              <p>
-                The chart below shows <strong className="text-amber-200">annual conflict events by continent</strong>{' '}
-                (weekly counts summed per year). Use it as a coarse sanity check: spikes and gaps in reporting vary by
-                region and period, so the map and this series will not line up perfectly.
+                The chart below shows the summed annual conflict events by continent.
+
               </p>
             </div>
           </DialogDescription>

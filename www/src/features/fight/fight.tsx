@@ -13,6 +13,8 @@ import { FightRoundBanner } from './fight-round-banner'
 import { FightSpeechBubble } from './fight-speech-bubble'
 import { FightSunbeam } from './fight-sunbeam'
 import { FightDenmarkChoroplethDialog } from './fight-denmark-choropleth-dialog'
+import { FightEpilogueChrome } from './fight-epilogue-overlay-text'
+import { FightGreenNewDealWin } from './fight-green-new-deal-win'
 import { FightTrumpWon } from './fight-trump-won'
 
 export function Fight({ onComplete }: { onComplete?: () => void }) {
@@ -42,8 +44,10 @@ function FightView() {
           <FightSunbeam />
           <FightMissiles />
           <FightTrumpWon />
+          <FightGreenNewDealWin />
           <FightIntroFrame />
           <FightSpeechBubble />
+          <FightEpilogueChrome />
           <FightRoundBanner />
           <FightMapSequence />
           <FightHudBars />

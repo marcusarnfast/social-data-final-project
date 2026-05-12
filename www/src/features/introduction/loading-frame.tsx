@@ -4,7 +4,10 @@ import { useEffect, useRef, useState } from 'react'
 
 import { Progress } from '~/components/ui/8bit/progress'
 import { Spinner } from '~/components/ui/8bit/spinner'
-import { transitionToTrack } from '~/features/audio/background-music'
+import {
+  setBackgroundMusicMuted,
+  transitionToTrack,
+} from '~/features/audio/background-music'
 import { preloadStoryAssets } from '~/features/story-introduction/preload-story-assets'
 import '~/components/ui/8bit/styles/retro.css'
 
@@ -62,6 +65,8 @@ export function LoadingFrame({ onComplete }: { onComplete: () => void }) {
       }
       setProgress(100)
 
+      // Western is the mission bed; ensure it is not left muted by start-screen priming.
+      setBackgroundMusicMuted(false)
       await transitionToTrack('western', { durationMs: 1500 })
 
       if (isCancelledRef.current) return

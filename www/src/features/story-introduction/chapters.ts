@@ -36,9 +36,9 @@ export const CHAPTERS: ReadonlyArray<Chapter> = [
     windowDays: 150,
     mapExploreFromView: { center: [22, 32], zoom: 1.65, pitch: 0, bearing: 0 },
     mapView: { center: [32.8, 48.2], zoom: 5.4, pitch: 38, bearing: -12 },
-    title: 'Russia/Ukraine invasion',
+    title: 'Russia invades Ukraine',
     description:
-      'Russia’s full-scale invasion shocks European energy. Denmark feels it at the pump as diesel and petrol spike — a long tail of price pressure tied to the war.',
+      'Russia invades Ukraine, starting the largest and deadliest war in Europe since World War II.',
     imageSrc: '/images/trump-putin-ukraine-war.png',
     chart: {
       type: 'bar',
@@ -58,9 +58,9 @@ export const CHAPTERS: ReadonlyArray<Chapter> = [
     windowDays: 150,
     mapExploreFromView: { center: [32, 28], zoom: 2.4, pitch: 0, bearing: 0 },
     mapView: { center: [34.85, 31.22], zoom: 7.4, pitch: 42, bearing: 10 },
-    title: 'Middle East escalation',
+    title: 'Iran–Israel conflict escalates',
     description:
-      'Early 2023: tensions and flare-ups across the region add risk to oil flows. Shipping and insurance costs creep up, and that pressure shows up in Danish pump prices through the year.',
+      'Hamas-led militants launched a surprise attack from Gaza into southern Israel, killing approximately 1,200 people and taking over 240 hostages, marking the deadliest day in Israeli history. The US surged military aid to its ally, Israel.',
     imageSrc: '/images/trump-middle-east.png',
     chart: {
       type: 'line',
@@ -80,9 +80,9 @@ export const CHAPTERS: ReadonlyArray<Chapter> = [
     windowDays: 90,
     mapExploreFromView: { center: [52, 24], zoom: 2.35, pitch: 0, bearing: 14 },
     mapView: { center: [56.45, 26.15], zoom: 7.0, pitch: 48, bearing: 20 },
-    title: 'US/Iran war',
+    title: 'US/Iran tensions escalate',
     description:
-      'Open US–Iran hostilities threaten the Strait of Hormuz. Markets price a severe supply shock — the scenario hits global oil and Danish pump prices hardest here.',
+      'The US and Israel conduct targeted strikes against Iranian interests. War and the closure of the Strait of Hormuz remain threats.',
     imageSrc: '/images/trump-iran-war.png',
     chart: {
       type: 'line',

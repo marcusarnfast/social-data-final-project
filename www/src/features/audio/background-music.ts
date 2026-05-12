@@ -3,6 +3,8 @@
 const TRACKS = {
   'street-fighter': '/music/super-street-fighter-ii-turbo-arcade-music-ryu-stage-cps2.mp3',
   western: '/music/western.mp3',
+  happy: '/music/happy.mp3',
+  elon: '/music/elon.mp3',
 } as const
 
 type TrackId = keyof typeof TRACKS
@@ -16,6 +18,15 @@ let hasPrimedAutoplay = false
 let hasUserInteracted = false
 let activeTrack: TrackState | null = null
 let transitionToken = 0
+/** Incoming track during `transitionToTrack` — not yet assigned to `activeTrack`; must be silenced on interrupt. */
+let crossfadeIncoming: HTMLAudioElement | null = null
+
+function silenceCrossfadeIncoming() {
+  if (!crossfadeIncoming) return
+  crossfadeIncoming.pause()
+  crossfadeIncoming.currentTime = 0
+  crossfadeIncoming = null
+}
 
 function getEffectiveVolume() {
   return BASE_VOLUME * backgroundMusicGain
@@ -45,6 +56,7 @@ export async function playTrack(id: TrackId) {
   }
 
   transitionToken += 1
+  silenceCrossfadeIncoming()
   if (activeTrack) {
     activeTrack.audio.pause()
     activeTrack.audio.currentTime = 0
@@ -62,10 +74,16 @@ export async function playTrack(id: TrackId) {
 
 export function stopBackgroundMusic() {
   transitionToken += 1
+  silenceCrossfadeIncoming()
   if (!activeTrack) return
   activeTrack.audio.pause()
   activeTrack.audio.currentTime = 0
   activeTrack = null
+}
+
+/** Used to avoid cutting the western handoff when entering the fight VS intro. */
+export function getActiveBackgroundTrackId(): TrackId | null {
+  return activeTrack?.id ?? null
 }
 
 export async function transitionToTrack(
@@ -86,7 +104,11 @@ export async function transitionToTrack(
     return
   }
 
+  transitionToken += 1
+  silenceCrossfadeIncoming()
+
   const next = ensureTrack(id)
+  crossfadeIncoming = next.audio
   next.audio.volume = 0
   next.audio.currentTime = 0
   next.audio.muted = backgroundMusicMuted
@@ -99,7 +121,14 @@ export async function transitionToTrack(
   const startedAt = Date.now()
 
   const tick = () => {
-    if (token !== transitionToken) return
+    if (token !== transitionToken) {
+      next.audio.pause()
+      next.audio.currentTime = 0
+      if (crossfadeIncoming === next.audio) {
+        crossfadeIncoming = null
+      }
+      return
+    }
 
     const elapsed = Date.now() - startedAt
     const progress = Math.min(1, elapsed / durationMs)
@@ -116,6 +145,9 @@ export async function transitionToTrack(
     current.audio.pause()
     current.audio.currentTime = 0
     activeTrack = next
+    if (crossfadeIncoming === next.audio) {
+      crossfadeIncoming = null
+    }
   }
 
   window.requestAnimationFrame(tick)

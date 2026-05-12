@@ -5,7 +5,7 @@ import { FULL_NARRATIVE_IMAGE_URL } from '~/features/story-introduction/story-as
  * Add optional `extras` for future fields without changing call sites that only read core props.
  */
 /** Background music key — matches a track id in `background-music.ts`. `null` means stop music on this frame. */
-export type FightFrameMusic = 'western' | 'street-fighter' | null
+export type FightFrameMusic = 'western' | 'street-fighter' | 'happy' | 'elon' | null
 
 /** A one-shot voice / sfx cue fired when this frame becomes active (including on re-entry). */
 export type FightFrameCue = Readonly<{
@@ -14,6 +14,8 @@ export type FightFrameCue = Readonly<{
   /** Delay in ms after frame becomes active before the cue fires. */
   delayMs?: number
   volume?: number
+  /** When true, `stopFightSfx` on the next frame does not interrupt this clip (runs until end or fight teardown). */
+  continuePastFrame?: boolean
 }>
 
 export type FightSpeaker = 'greta' | 'trump'
@@ -325,6 +327,8 @@ export const FIGHT_SCENE_STORE = {
         greta: { health: 0, mood: 0 },
         trump: { health: 100, mood: 100 },
       },
+      cues: [{ src: '/fight/you-win-street-fighter.mp3', delayMs: 0, volume: 0.92 }],
+      music: null,
       extras: {
         effect: 'trump-won',
         hideFighters: true,
@@ -335,6 +339,7 @@ export const FIGHT_SCENE_STORE = {
       title: 'After (background pan)',
       caption: 'Quiet — background only.',
       backgroundFocusYPercent: 40,
+      music: 'happy',
       round: 3,
       extras: { hideFighters: true, hideHud: true },
     },
@@ -343,36 +348,92 @@ export const FIGHT_SCENE_STORE = {
       caption: 'Quiet — background only.',
       backgroundFocusYPercent: 40,
       round: 3,
+      music: 'happy',
       extras: { hideFighters: true, hideHud: true },
     },
+ 
     {
-      title: 'Epilogue I',
-      caption: 'Mural hold — slight drift down.',
-      backgroundFocusYPercent: 44,
+      title: 'Epilogue II — Greta & Trump win',
+      caption: 'Art of the Green New Deal — both names on the marquee.',
+      backgroundFocusYPercent: 56,
       round: 3,
-      extras: { hideFighters: true, hideHud: true },
-    },
-    {
-      title: 'Epilogue II',
-      caption: 'Mural hold — continued drift.',
-      backgroundFocusYPercent: 48,
-      round: 3,
-      extras: { hideFighters: true, hideHud: true },
+      music: 'happy',
+      snapshot: {
+        greta: { health: 100, mood: 100 },
+        trump: { health: 100, mood: 100 },
+      },
+      cues: [
+        { src: '/fight/you-win-street-fighter.mp3', delayMs: 50, volume: 0.92 },
+        { src: '/fight/perfect.mp3', delayMs: 580, volume: 0.9 },
+      ],
+      extras: {
+        effect: 'green-new-deal-win',
+        hideFighters: true,
+        hideHud: true,
+      },
     },
     {
       title: 'Epilogue III',
       caption: 'Mural hold — lower field.',
-      backgroundFocusYPercent: 52,
+      backgroundFocusYPercent: 64,
+      music: 'happy',
       round: 3,
       extras: { hideFighters: true, hideHud: true },
     },
-    {
+     {
       title: 'Epilogue IV',
-      caption: 'Final hold — no further frames.',
-      backgroundFocusYPercent: 56,
+      caption: 'Mural hold — lower field.',
+      backgroundFocusYPercent: 70,
+      music: 'elon',
       round: 3,
-      music: null,
       extras: { hideFighters: true, hideHud: true },
+    },
+         {
+      title: 'Epilogue IV',
+      caption: 'Mural hold — lower field.',
+      backgroundFocusYPercent: 78,
+      music: 'elon',
+      round: 3,
+      cues: [{ src: '/fight/Elooon.mp3', delayMs: 0, volume: 0.95, continuePastFrame: true }],
+      extras: { hideFighters: true, hideHud: true },
+    },
+          {
+      title: 'Epilogue IV',
+      caption: 'Mural hold — lower field.',
+      backgroundFocusYPercent: 86,
+      music: 'elon',
+      round: 3,
+    extras: {
+        hideFighters: true,
+        hideHud: true,
+        epilogueOverlayText: 'WAS IT ELON ALL ALONG?',
+      },
+    },
+              {
+      title: 'Epilogue IV',
+      caption: 'Mural hold — lower field.',
+      backgroundFocusYPercent: 96,
+      music: 'elon',
+      round: 3,
+    extras: {
+        hideFighters: true,
+        hideHud: true,
+        epilogueOverlayText: 'WAS IT ELON ALL ALONG?',
+      },
+    },
+                {
+      title: 'Epilogue IV',
+      caption: 'Final beat — Elon twist.',
+      backgroundFocusYPercent: 100,
+      music: 'elon',
+      round: 3,
+      extras: {
+        hideFighters: true,
+        hideHud: true,
+        epilogueOverlayText: 'WAS IT ELON ALL ALONG?',
+        notebookLinkUrl:
+          'https://github.com/marcusarnfast/social-data-final-project/blob/main/notebook.ipynb',
+      },
     },
   ],
 } as const satisfies FightSceneStore
