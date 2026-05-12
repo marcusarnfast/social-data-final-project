@@ -295,6 +295,7 @@ export function FightProvider({ children, onComplete }: FightProviderProps) {
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
       if (e.defaultPrevented) return
+      if (e.target instanceof Element && e.target.closest('[data-slot="dialog-content"]')) return
       if (isKeyboardBlockedTarget(e.target)) return
       if (e.altKey || e.ctrlKey || e.metaKey) return
 

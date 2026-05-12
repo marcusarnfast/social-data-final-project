@@ -12,6 +12,7 @@ import { FightMissiles } from './fight-missiles'
 import { FightRoundBanner } from './fight-round-banner'
 import { FightSpeechBubble } from './fight-speech-bubble'
 import { FightSunbeam } from './fight-sunbeam'
+import { FightDenmarkChoroplethDialog } from './fight-denmark-choropleth-dialog'
 import { FightTrumpWon } from './fight-trump-won'
 
 export function Fight({ onComplete }: { onComplete?: () => void }) {
@@ -48,6 +49,7 @@ function FightView() {
           <FightHudBars />
           <FightHud />
           <FightAudioController />
+          <FightDenmarkChoroplethDialog />
         </div>
       </div>
 
