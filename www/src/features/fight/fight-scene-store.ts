@@ -1,4 +1,4 @@
-import { FULL_NARRATIVE_IMAGE_URL } from '~/features/story-introduction/preload-story-assets'
+import { FULL_NARRATIVE_IMAGE_URL } from '~/features/story-introduction/story-asset-urls'
 
 /**
  * One scroll "frame": copy + vertical focus on the mural (`object-position` Y %).
@@ -345,8 +345,56 @@ export const FIGHT_SCENE_STORE = {
       round: 3,
       extras: { hideFighters: true, hideHud: true },
     },
+    {
+      title: 'Epilogue I',
+      caption: 'Mural hold — slight drift down.',
+      backgroundFocusYPercent: 44,
+      round: 3,
+      extras: { hideFighters: true, hideHud: true },
+    },
+    {
+      title: 'Epilogue II',
+      caption: 'Mural hold — continued drift.',
+      backgroundFocusYPercent: 48,
+      round: 3,
+      extras: { hideFighters: true, hideHud: true },
+    },
+    {
+      title: 'Epilogue III',
+      caption: 'Mural hold — lower field.',
+      backgroundFocusYPercent: 52,
+      round: 3,
+      extras: { hideFighters: true, hideHud: true },
+    },
+    {
+      title: 'Epilogue IV',
+      caption: 'Final hold — no further frames.',
+      backgroundFocusYPercent: 56,
+      round: 3,
+      music: null,
+      extras: { hideFighters: true, hideHud: true },
+    },
   ],
 } as const satisfies FightSceneStore
+
+const IMAGE_URL_RE = /\.(png|gif|webp|jpe?g|svg)$/i
+
+/** Raster URLs referenced by the fight scene store (for loading-screen preload). */
+export function getFightPreloadImageUrlsFromStore(): string[] {
+  const urls = new Set<string>()
+  urls.add(FIGHT_SCENE_STORE.background.imageSrc)
+  urls.add(FIGHT_SCENE_STORE.fighters.greta.idleSrc)
+  urls.add(FIGHT_SCENE_STORE.fighters.trump.idleSrc)
+  for (const frame of FIGHT_SCENE_STORE.frames) {
+    for (const cue of frame.cues ?? []) {
+      if (IMAGE_URL_RE.test(cue.src)) urls.add(cue.src)
+    }
+    const fighters = frame.fighters
+    if (fighters?.greta?.src) urls.add(fighters.greta.src)
+    if (fighters?.trump?.src) urls.add(fighters.trump.src)
+  }
+  return [...urls]
+}
 
 export type FightKnownSceneStore = typeof FIGHT_SCENE_STORE
 

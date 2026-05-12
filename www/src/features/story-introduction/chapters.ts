@@ -16,6 +16,8 @@ export type Chapter = {
   mapExploreFromView?: ChapterMapCamera
   title: string
   description: string
+  /** Trump illustration for the chapter card (public path). */
+  imageSrc: string
   chart: {
     type: 'line' | 'bar'
     data: Array<ChapterChartPoint>
@@ -29,86 +31,68 @@ export const STORY_END = new Date('2026-05-01T00:00:00Z')
 
 export const CHAPTERS: ReadonlyArray<Chapter> = [
   {
-    id: 'arab-spring-syrian-civil-war',
-    time: new Date('2011-03-15T00:00:00Z'),
-    windowDays: 180,
-    mapView: { center: [30.0, 25.0], zoom: 3.4, pitch: 20, bearing: 0 },
-    title: 'Arab Spring & Syrian Civil War',
-    description:
-      '2011 and 2012. The Arab Spring spreads across North Africa and the Middle East while Syria descends into civil war. Oil markets price in instability across the region, with pressure returning during the 2017/2018 peaks.',
-    chart: {
-      type: 'bar',
-      yLabel: 'Average oil price ($ / barrel)',
-      xLabel: 'Year',
-      data: [
-        { label: '2011', value: 111 },
-        { label: '2012', value: 112 },
-        { label: '2017', value: 54 },
-        { label: '2018', value: 71 },
-        { label: 'impact', value: 100 },
-      ],
-    },
-  },
-  {
     id: 'russia-ukraine-war',
     time: new Date('2022-02-24T00:00:00Z'),
     windowDays: 150,
     mapExploreFromView: { center: [22, 32], zoom: 1.65, pitch: 0, bearing: 0 },
-    mapView: { center: [33.0, 48.5], zoom: 4.2, pitch: 35, bearing: -10 },
-    title: 'Russia / Ukraine war',
+    mapView: { center: [32.8, 48.2], zoom: 5.4, pitch: 38, bearing: -12 },
+    title: 'Russia/Ukraine invasion',
     description:
-      'It starts in 2014 with Russia annexing Crimea. It escalates into a full invasion in February 2022. Europe loses its biggest gas supplier overnight, and the shock travels straight into pumps across the continent — a huge impact on fuel prices, with diesel and petrol spiking to record highs in Denmark and beyond.',
+      'Russia’s full-scale invasion shocks European energy. Denmark feels it at the pump as diesel and petrol spike — a long tail of price pressure tied to the war.',
+    imageSrc: '/images/trump-putin-ukraine-war.png',
     chart: {
       type: 'bar',
       yLabel: 'Oil price ($ / barrel)',
-      xLabel: 'Event',
+      xLabel: 'Phase',
       data: [
-        { label: '2014', value: 99 },
-        { label: '2021', value: 71 },
+        { label: 'Pre-2022', value: 71 },
         { label: '2022 avg', value: 101 },
         { label: '2022 peak', value: 128 },
+        { label: 'Shock', value: 100 },
       ],
     },
   },
   {
     id: 'middle-east-escalation',
-    time: new Date('2023-10-07T00:00:00Z'),
+    time: new Date('2023-10-27T00:00:00Z'),
     windowDays: 150,
-    mapExploreFromView: { center: [28, 24], zoom: 1.85, pitch: 0, bearing: 0 },
-    mapView: { center: [34.4, 31.4], zoom: 5.0, pitch: 35, bearing: 8 },
+    mapExploreFromView: { center: [32, 28], zoom: 2.4, pitch: 0, bearing: 0 },
+    mapView: { center: [34.85, 31.22], zoom: 7.4, pitch: 42, bearing: 10 },
     title: 'Middle East escalation',
     description:
-      'October 7th, 2023. The Israel and Palestine conflict escalates, Red Sea shipping is impacted, and oil prices carry an added risk premium through 2024 and 2025.',
+      'Early 2023: tensions and flare-ups across the region add risk to oil flows. Shipping and insurance costs creep up, and that pressure shows up in Danish pump prices through the year.',
+    imageSrc: '/images/trump-middle-east.png',
     chart: {
       type: 'line',
       yLabel: 'Oil price ($ / barrel)',
-      xLabel: 'Event window',
+      xLabel: 'Window',
       data: [
         { label: '2023 avg', value: 83 },
-        { label: 'Oct 2023', value: 88 },
-        { label: '2024 risk', value: 90 },
-        { label: 'peak', value: 93 },
+        { label: 'Feb 2023', value: 88 },
+        { label: '2024', value: 90 },
+        { label: 'Peak', value: 93 },
       ],
     },
   },
   {
     id: 'us-iran-war',
-    time: new Date('2026-04-01T00:00:00Z'),
+    time: new Date('2026-02-28T00:00:00Z'),
     windowDays: 90,
-    mapExploreFromView: { center: [48, 22], zoom: 1.75, pitch: 0, bearing: 12 },
-    mapView: { center: [53.0, 28.0], zoom: 4.6, pitch: 42, bearing: 18 },
-    title: 'US war with Iran',
+    mapExploreFromView: { center: [52, 24], zoom: 2.35, pitch: 0, bearing: 14 },
+    mapView: { center: [56.45, 26.15], zoom: 7.0, pitch: 48, bearing: 20 },
+    title: 'US/Iran war',
     description:
-      '2026. The United States enters a formal war with Iran and strikes with missiles. The Strait of Hormuz closes, forcing a major shock into oil prices and the global economy.',
+      'Open US–Iran hostilities threaten the Strait of Hormuz. Markets price a severe supply shock — the scenario hits global oil and Danish pump prices hardest here.',
+    imageSrc: '/images/trump-iran-war.png',
     chart: {
       type: 'line',
       yLabel: 'Oil price ($ / barrel)',
-      xLabel: 'Projected path',
+      xLabel: 'Stress path',
       data: [
-        { label: 'baseline', value: 83 },
-        { label: 'projected avg', value: 96 },
-        { label: 'recent jump', value: 100 },
-        { label: 'stress case', value: 110 },
+        { label: 'Baseline', value: 83 },
+        { label: 'Avg', value: 96 },
+        { label: 'Jump', value: 100 },
+        { label: 'Stress', value: 110 },
       ],
     },
   },

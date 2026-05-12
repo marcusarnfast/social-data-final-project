@@ -35,6 +35,22 @@ function ensureTrack(id: TrackId): TrackState {
 }
 
 export async function playTrack(id: TrackId) {
+  if (activeTrack?.id === id) {
+    activeTrack.audio.muted = backgroundMusicMuted
+    activeTrack.audio.volume = getEffectiveVolume()
+    await activeTrack.audio.play().catch(() => {
+      // Ignore playback errors from restrictive browser policies.
+    })
+    return
+  }
+
+  transitionToken += 1
+  if (activeTrack) {
+    activeTrack.audio.pause()
+    activeTrack.audio.currentTime = 0
+  }
+  activeTrack = null
+
   const track = ensureTrack(id)
   activeTrack = track
   track.audio.volume = getEffectiveVolume()

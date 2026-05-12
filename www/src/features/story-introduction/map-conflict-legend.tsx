@@ -2,7 +2,7 @@
 
 import '~/components/ui/8bit/styles/retro.css'
 
-import { MAP_MONTHLY_EVENT_ICONS } from './map-monthly-event-icons'
+import { MAP_MONTHLY_EVENT_LEGEND_ROWS } from './map-monthly-event-icons'
 
 export function MapConflictLegend() {
   return (
@@ -12,7 +12,7 @@ export function MapConflictLegend() {
     >
       <p className="mb-1.5 text-[6px] uppercase tracking-[0.22em] text-amber-300">Event icons</p>
       <ul className="flex flex-col gap-1.5">
-        {MAP_MONTHLY_EVENT_ICONS.map((row) => (
+        {MAP_MONTHLY_EVENT_LEGEND_ROWS.map((row) => (
           <li key={row.id} className="flex items-center gap-2">
             <img
               src={row.url}

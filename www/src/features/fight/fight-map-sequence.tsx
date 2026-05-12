@@ -52,6 +52,11 @@ const INTRO_COPY: Record<string, IntroCopy> = {
     title: 'Red Sea pressure',
     body: 'Trump calls it leverage. The Middle East lights up — shipping snarls, risk premiums climb, and pumps feel it again. Scroll forward.',
   },
+  'us-iran-war': {
+    eyebrow: 'Round 3 — Replay',
+    title: 'Strait shock',
+    body: 'Missiles, Hormuz, and a brutal squeeze on oil. Scroll forward to see how the timeline prices the risk into Danish fuel.',
+  },
 }
 
 function readMapExtras(extras: Record<string, unknown> | undefined): MapExtras | null {

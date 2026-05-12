@@ -102,8 +102,17 @@ export type FightContextValue = {
 
 const FightContext = createContext<FightContextValue | null>(null)
 
-export function FightProvider({ children }: { children: ReactNode }) {
+type FightProviderProps = {
+  children: ReactNode
+  /** Fires once when the player reaches the final fight frame (after background end). */
+  onComplete?: () => void
+}
+
+export function FightProvider({ children, onComplete }: FightProviderProps) {
   const sectionRef = useRef<HTMLElement | null>(null)
+  const onCompleteRef = useRef(onComplete)
+  onCompleteRef.current = onComplete
+  const didFireCompleteRef = useRef(false)
   const [frameIndex, setFrameIndex] = useState(0)
   const [previousFrameIndex, setPreviousFrameIndex] = useState(0)
   const frameCount = FIGHT_SCENE_STORE.frames.length
@@ -150,6 +159,11 @@ export function FightProvider({ children }: { children: ReactNode }) {
 
     const onScroll = () => {
       if (performance.now() < programmaticLockUntilRef.current) return
+      const step = measureStepPx(scroller)
+      const maxScroll = (frameCount - 1) * step
+      if (scroller.scrollTop > maxScroll + 0.5) {
+        scroller.scrollTop = maxScroll
+      }
       const next = readScrollerFrameIndex(scroller, frameCount)
       if (next === targetFrameRef.current) return
       setPreviousFrameIndex(targetFrameRef.current)
@@ -191,6 +205,10 @@ export function FightProvider({ children }: { children: ReactNode }) {
     const onWheel = (e: WheelEvent) => {
       if (e.defaultPrevented) return
       e.preventDefault()
+
+      if (e.deltaY > 0 && targetFrameRef.current >= frameCount - 1) {
+        return
+      }
 
       // Smooth-scroll delegate (e.g. map sequence) consumes raw wheel deltas
       // and bypasses the discrete idle-lock used by frame stepping.
@@ -251,6 +269,7 @@ export function FightProvider({ children }: { children: ReactNode }) {
       if (consumed) return
       const dy = currentY - startY
       if (Math.abs(dy) < TOUCH_SWIPE_THRESHOLD_PX) return
+      if (dy < 0 && targetFrameRef.current >= frameCount - 1) return
       consumed = true
       stepFrame(dy < 0 ? 1 : -1)
     }
@@ -284,6 +303,9 @@ export function FightProvider({ children }: { children: ReactNode }) {
 
       e.preventDefault()
 
+      if ((key === 'ArrowDown' || key === 'PageDown') && targetFrameRef.current >= frameCount - 1) {
+        return
+      }
       if (key === 'ArrowDown' || key === 'PageDown') stepFrame(1)
       else stepFrame(-1)
     }
@@ -313,6 +335,15 @@ export function FightProvider({ children }: { children: ReactNode }) {
       registerGestureDelegate,
     }
   }, [frameCount, frameIndex, previousFrameIndex, registerGestureDelegate])
+
+  useEffect(() => {
+    const cb = onCompleteRef.current
+    if (!cb) return
+    if (frameIndex < frameCount - 1) return
+    if (didFireCompleteRef.current) return
+    didFireCompleteRef.current = true
+    cb()
+  }, [frameCount, frameIndex])
 
   return <FightContext.Provider value={value}>{children}</FightContext.Provider>
 }

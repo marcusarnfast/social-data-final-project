@@ -31,6 +31,11 @@ export interface BitDialogProps
   extends React.ComponentProps<"div">,
     VariantProps<typeof dialogContentVariants> {}
 
+export type BitDialogContentProps = React.ComponentProps<
+  typeof ShadcnDialogContent
+> &
+  VariantProps<typeof dialogContentVariants>;
+
 function DialogTitle({ ...props }: BitDialogProps) {
   const { className, font } = props;
   return (
@@ -58,7 +63,7 @@ function DialogContent({
   children,
   font,
   ...props
-}: BitDialogProps) {
+}: BitDialogContentProps) {
   return (
     <ShadcnDialogContent
       className={cn(

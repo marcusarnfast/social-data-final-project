@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useLayoutEffect, useRef } from 'react'
 
 import {
   playTrack,
@@ -13,6 +13,11 @@ import { useFight } from './fight-context'
 export function FightAudioController() {
   const { scene, frameIndex } = useFight()
   const lastMusicRef = useRef<string | null | undefined>(undefined)
+
+  useLayoutEffect(() => {
+    // Cut terminal / menu loop (Street Fighter II–style track) so it cannot bleed into the fight timeline.
+    stopBackgroundMusic()
+  }, [])
 
   useEffect(() => {
     const music = scene.music

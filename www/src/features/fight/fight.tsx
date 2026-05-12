@@ -9,15 +9,14 @@ import { FightHudBars } from './fight-hud-bars'
 import { FightIntroFrame } from './fight-intro-frame'
 import { FightMapSequence } from './fight-map-sequence'
 import { FightMissiles } from './fight-missiles'
-import { FightMusicToggle } from './fight-music-toggle'
 import { FightRoundBanner } from './fight-round-banner'
 import { FightSpeechBubble } from './fight-speech-bubble'
 import { FightSunbeam } from './fight-sunbeam'
 import { FightTrumpWon } from './fight-trump-won'
 
-export function Fight() {
+export function Fight({ onComplete }: { onComplete?: () => void }) {
   return (
-    <FightProvider>
+    <FightProvider onComplete={onComplete}>
       <FightView />
     </FightProvider>
   )
@@ -48,7 +47,6 @@ function FightView() {
           <FightMapSequence />
           <FightHudBars />
           <FightHud />
-          <FightMusicToggle />
           <FightAudioController />
         </div>
       </div>

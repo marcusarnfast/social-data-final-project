@@ -1,3 +1,7 @@
+import { getFightPreloadImageUrlsFromStore } from '~/features/fight/fight-scene-store'
+
+import { FULL_NARRATIVE_IMAGE_URL } from './story-asset-urls'
+
 const STORY_JSON_URLS = {
   propellantPrices: '/data/propellant-prices.json',
   monthlyIconsGeojson: '/map-geojsons/conflict_monthly_map_icons.geojson',
@@ -12,7 +16,15 @@ const MAP_ICON_URLS = [
   '/map-icons/violence_against_civilians.png',
 ] as const
 
-const FULL_NARRATIVE_IMAGE_URL = '/images/full-narrative.png'
+/** Fight UI layers not declared on scene frames (intro VS, missiles, sunbeam, end card). */
+const FIGHT_EXTRA_IMAGE_URLS = [
+  '/fight/greta-thunberg.gif',
+  '/fight/donald-trump.gif',
+  '/fight/r2/Sunbeam.png',
+  '/fight/r3/missile.png',
+  '/fight/final/Final - Trump won.gif',
+] as const
+
 const FIGHT_AUDIO_URLS = [
   '/fight/round.mp3',
   '/fight/1.mp3',
@@ -97,6 +109,8 @@ export async function preloadStoryAssets(
 ): Promise<StoryAssets> {
   if (storyAssetsPromise) return storyAssetsPromise
 
+  const fightSceneImageUrls = getFightPreloadImageUrlsFromStore()
+
   const tasks: Array<{ label: string; run: () => Promise<unknown> }> = [
     { label: 'Fuel prices', run: () => loadJson(STORY_JSON_URLS.propellantPrices) },
     { label: 'Monthly icon geojson', run: () => loadJson(STORY_JSON_URLS.monthlyIconsGeojson) },
@@ -105,6 +119,14 @@ export async function preloadStoryAssets(
       run: () => loadImage(url),
     })),
     { label: 'Narrative artwork', run: () => loadImage(FULL_NARRATIVE_IMAGE_URL) },
+    ...fightSceneImageUrls.map((url) => ({
+      label: `Fight scene ${url.split('/').pop() ?? url}`,
+      run: () => loadImage(url),
+    })),
+    ...FIGHT_EXTRA_IMAGE_URLS.map((url) => ({
+      label: `Fight layer ${url.split('/').pop() ?? url}`,
+      run: () => loadImage(url),
+    })),
     ...FIGHT_AUDIO_URLS.map((url) => ({
       label: `Audio ${url.split('/').pop() ?? url}`,
       run: () => loadAudio(url),

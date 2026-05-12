@@ -4,25 +4,64 @@ import { TanStackDevtools } from '@tanstack/react-devtools'
 
 import appCss from '../styles.css?url'
 import { Providers } from '~/components/providers'
+import { FULL_NARRATIVE_IMAGE_URL } from '~/features/story-introduction/story-asset-urls'
+
+const SITE_TITLE =
+  'Social Data Final Project'
+const SITE_DESCRIPTION =
+  'Social Data Final Project'
+
+function rootHeadMeta() {
+  const originRaw = import.meta.env.VITE_SITE_ORIGIN as string | undefined
+  const origin = originRaw?.replace(/\/$/, '') ?? ''
+  const shareImage = origin ? `${origin}${FULL_NARRATIVE_IMAGE_URL}` : ''
+  const canonical = origin ? `${origin}/` : ''
+
+  const meta: Array<
+    | { charSet: 'utf-8' }
+    | { name: string; content: string }
+    | { title: string }
+    | { property: string; content: string }
+  > = [
+      { charSet: 'utf-8' },
+      {
+        name: 'viewport',
+        content: 'width=device-width, initial-scale=1',
+      },
+      {
+        title: SITE_TITLE,
+      },
+      {
+        name: 'description',
+        content: SITE_DESCRIPTION,
+      },
+      {
+        name: 'theme-color',
+        content: '#0a0a0a',
+      },
+      { property: 'og:title', content: SITE_TITLE },
+      { property: 'og:description', content: SITE_DESCRIPTION },
+      { property: 'og:type', content: 'website' },
+      { name: 'twitter:card', content: 'summary_large_image' },
+      { name: 'twitter:title', content: SITE_TITLE },
+      { name: 'twitter:description', content: SITE_DESCRIPTION },
+    ]
+
+  if (canonical) {
+    meta.push({ property: 'og:url', content: canonical })
+    meta.push({ name: 'twitter:url', content: canonical })
+  }
+  if (shareImage) {
+    meta.push({ property: 'og:image', content: shareImage })
+    meta.push({ name: 'twitter:image', content: shareImage })
+  }
+
+  return meta
+}
 
 export const Route = createRootRoute({
   head: () => ({
-    meta: [
-      {
-        charSet: "utf-8",
-      },
-      {
-        name: "viewport",
-        content: "width=device-width, initial-scale=1",
-      },
-      {
-        title: "We ❤️ SF Crimes",
-      },
-      {
-        name: "theme-color",
-        content: "#ffffff",
-      },
-    ],
+    meta: rootHeadMeta(),
     links: [
       {
         rel: "stylesheet",

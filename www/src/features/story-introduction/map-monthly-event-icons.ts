@@ -4,7 +4,7 @@ export const MAP_MONTHLY_EVENT_ICONS = [
   {
     id: 'explosions-remote-violence',
     url: '/map-icons/explosions_remote_violence.png',
-    label: 'Explosions / remote violence',
+    label: 'Explosions/Remote violence',
   },
   { id: 'protest', url: '/map-icons/protests.png', label: 'Protests' },
   { id: 'riots', url: '/map-icons/riots.png', label: 'Riots' },
@@ -19,3 +19,15 @@ export const MAP_MONTHLY_EVENT_ICONS = [
     label: 'Violence against civilians',
   },
 ] as const
+
+/** Icons shown in the map UI legend (subset of types emphasized in the story). */
+export const MAP_MONTHLY_EVENT_LEGEND_IDS = [
+  'battles',
+  'explosions-remote-violence',
+  'riots',
+  'violence-against-civilians',
+] as const
+
+export const MAP_MONTHLY_EVENT_LEGEND_ROWS = MAP_MONTHLY_EVENT_ICONS.filter((row) =>
+  (MAP_MONTHLY_EVENT_LEGEND_IDS as readonly string[]).includes(row.id),
+)

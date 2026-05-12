@@ -48,7 +48,8 @@ export function MapDataAvailabilityDialog({
         showCloseButton
         font={isRetro ? 'retro' : 'normal'}
         className={cn(
-          'max-h-[85vh] max-w-lg overflow-y-auto border-[6px] border-amber-200 bg-black text-amber-100',
+          'w-full max-w-[calc(100vw-1.25rem)] min-w-0 sm:max-w-[min(1400px,calc(100vw-2rem))]',
+          'max-h-[92vh] overflow-x-hidden overflow-y-auto border-[6px] border-amber-200 bg-black text-amber-100',
           isRetro ? 'gap-4' : 'gap-3',
         )}
       >
@@ -73,26 +74,25 @@ export function MapDataAvailabilityDialog({
             <div>
               <p className="mb-3">
                 Conflict markers come from event datasets that are <strong className="text-amber-200">incomplete by
-                nature</strong>: not every incident is coded, coverage shifts by source and year, and quieter
+                  nature</strong>: not every incident is coded, coverage shifts by source and year, and quieter
                 regions can look “clean” on the map even when risk or prices move for other reasons.
               </p>
               <p>
-                The section below is reserved for a <strong className="text-amber-200">coverage chart</strong> and
-                a short methodology note — drop your figure in here when it is ready.
+                The chart below shows <strong className="text-amber-200">annual conflict events by continent</strong>{' '}
+                (weekly counts summed per year). Use it as a coarse sanity check: spikes and gaps in reporting vary by
+                region and period, so the map and this series will not line up perfectly.
               </p>
             </div>
           </DialogDescription>
         </DialogHeader>
 
-        <div
-          role="status"
-          aria-label="Placeholder for upcoming coverage visualization"
-          className={cn(
-            'flex min-h-[140px] items-center justify-center border-2 border-dashed border-amber-600/55 bg-emerald-950/40 text-amber-400/90',
-            isRetro ? 'text-[8px] uppercase tracking-[0.2em]' : 'font-mono text-xs',
-          )}
-        >
-          Chart + explanation placeholder
+        <div className="min-h-0 min-w-0 w-full max-w-full overflow-hidden rounded-sm border-2 border-amber-700/45 bg-[#0f0f1a] shadow-[inset_0_0_0_1px_rgba(251,191,36,0.12)]">
+          <iframe
+            title="Annual conflict events by continent"
+            src="/charts/continent-events-by-year-nes.html"
+            className="block h-[min(75vh,720px)] w-full min-w-0 max-w-full border-0"
+            loading="lazy"
+          />
         </div>
 
         <DialogFooter className="sm:justify-end">

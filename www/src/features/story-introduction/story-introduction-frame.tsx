@@ -5,7 +5,7 @@ import type { RefObject } from 'react'
 
 import { CHAPTERS, STORY_END, STORY_START } from './chapters'
 import type { Chapter } from './chapters'
-import { FightScrollStage } from './fight-scroll-stage'
+import { Fight } from '~/features/fight/fight'
 import { FULL_NARRATIVE_IMAGE_URL } from './preload-story-assets'
 import { StoryChapterModal } from './story-chapter-modal'
 import { MapDataAvailabilityDialog } from './map-data-availability-dialog'
@@ -223,7 +223,7 @@ export function StoryIntroductionFrame() {
   }, [enterMapPanel, enterVehiclePanel, mapCompleted, storyMode, vehicleCompleted])
 
   if (storyMode === 'fight-intro') {
-    return <FightScrollStage onComplete={handleFightComplete} />
+    return <Fight onComplete={handleFightComplete} />
   }
 
   return (
