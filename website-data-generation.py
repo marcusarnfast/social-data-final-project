@@ -3,7 +3,8 @@
 
 Currently produces:
   * `www/public/map-geojsons/conflict_monthly_map_icons.geojson`
-    Filtered monthly conflict icon GeoJSON for the Mapbox symbol layer.
+    Filtered monthly conflict icon GeoJSON for the Mapbox symbol layer
+    (Americas ACLED regions omitted to limit file size).
   * `www/public/data/propellant-prices.json`
     Monthly average petrol/diesel prices (DKK/L) for the story timeline chart.
 """
@@ -42,6 +43,16 @@ FOCUS_SUB_EVENT_TYPES = [
     "Shelling/artillery/missile attack",
     "Suicide bomb",
 ]
+
+# ACLED `REGION` values for the Americas — excluded to keep the map GeoJSON small.
+EXCLUDED_AMERICAS_REGIONS = frozenset(
+    {
+        "Caribbean",
+        "Central America",
+        "North America",
+        "South America",
+    }
+)
 
 # ACLED `EVENT_TYPE` -> map `icon` (must be one of MAP_MONTHLY_EVENT_ICONS in the web app).
 EVENT_TYPE_TO_ICON: dict[str, str] = {
@@ -97,6 +108,7 @@ def build_conflict_geojson(*, dedupe: bool) -> dict:
     csv_path = REPO_ROOT / "data" / "conflict-index.csv"
     conflict = pd.read_csv(csv_path)
     conflict["WEEK"] = pd.to_datetime(conflict["WEEK"], utc=True)
+    conflict = conflict[~conflict["REGION"].isin(EXCLUDED_AMERICAS_REGIONS)]
     conflict = conflict[
         conflict["EVENT_TYPE"].isin(FOCUS_EVENT_TYPES)
         & conflict["SUB_EVENT_TYPE"].isin(FOCUS_SUB_EVENT_TYPES)
