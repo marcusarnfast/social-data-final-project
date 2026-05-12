@@ -8,6 +8,7 @@ import type { Chapter } from './chapters'
 import { FightScrollStage } from './fight-scroll-stage'
 import { FULL_NARRATIVE_IMAGE_URL } from './preload-story-assets'
 import { StoryChapterModal } from './story-chapter-modal'
+import { MapDataAvailabilityDialog } from './map-data-availability-dialog'
 import { StoryMap } from './story-map'
 import { StoryTimeline } from './story-timeline'
 import { VehiclePanel } from './vehicle-panel'
@@ -287,17 +288,18 @@ function MapPanelOverlay({
           style={{ minHeight: '800vh' }}
           aria-label="Map panel: scroll to finish and return to story"
         >
-          <div className="sticky top-0 grid h-svh w-full grid-rows-[1fr_minmax(180px,28%)] overflow-hidden">
-            <div className="relative min-h-0">
+          <div className="sticky top-0 grid h-svh w-full grid-rows-[1fr_minmax(180px,28%)] bg-black text-amber-100">
+            <div className="relative min-h-0 overflow-hidden">
               <StoryMap currentDate={currentDate} activeChapter={activeChapter} />
               <StoryChapterModal chapter={activeChapter} />
+              <MapDataAvailabilityDialog variant="default" />
               <ScrollHint />
               <ChapterRail activeChapterId={activeChapter?.id ?? null} />
               <div className="absolute bottom-4 right-5 font-mono text-[10px] uppercase tracking-[0.18em] text-amber-300/80">
                 map {(progress * 100).toFixed(0)}%
               </div>
             </div>
-            <div className="min-h-0 border-t border-amber-500/40">
+            <div className="relative min-h-0 h-full overflow-visible border-t border-amber-500/40">
               <StoryTimeline currentDate={currentDate} />
             </div>
           </div>

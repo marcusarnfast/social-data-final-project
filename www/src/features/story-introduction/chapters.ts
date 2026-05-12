@@ -1,10 +1,19 @@
 export type ChapterChartPoint = { label: string; value: number }
 
+export type ChapterMapCamera = {
+  center: [number, number]
+  zoom: number
+  pitch?: number
+  bearing?: number
+}
+
 export type Chapter = {
   id: string
   time: Date
   windowDays: number
-  mapView: { center: [number, number]; zoom: number; pitch?: number; bearing?: number }
+  mapView: ChapterMapCamera
+  /** Wide shot at fight map explore progress 0; lerps to `mapView` as progress → 1. */
+  mapExploreFromView?: ChapterMapCamera
   title: string
   description: string
   chart: {
@@ -44,6 +53,7 @@ export const CHAPTERS: ReadonlyArray<Chapter> = [
     id: 'russia-ukraine-war',
     time: new Date('2022-02-24T00:00:00Z'),
     windowDays: 150,
+    mapExploreFromView: { center: [22, 32], zoom: 1.65, pitch: 0, bearing: 0 },
     mapView: { center: [33.0, 48.5], zoom: 4.2, pitch: 35, bearing: -10 },
     title: 'Russia / Ukraine war',
     description:
@@ -64,6 +74,7 @@ export const CHAPTERS: ReadonlyArray<Chapter> = [
     id: 'middle-east-escalation',
     time: new Date('2023-10-07T00:00:00Z'),
     windowDays: 150,
+    mapExploreFromView: { center: [28, 24], zoom: 1.85, pitch: 0, bearing: 0 },
     mapView: { center: [34.4, 31.4], zoom: 5.0, pitch: 35, bearing: 8 },
     title: 'Middle East escalation',
     description:
@@ -84,6 +95,7 @@ export const CHAPTERS: ReadonlyArray<Chapter> = [
     id: 'us-iran-war',
     time: new Date('2026-04-01T00:00:00Z'),
     windowDays: 90,
+    mapExploreFromView: { center: [48, 22], zoom: 1.75, pitch: 0, bearing: 12 },
     mapView: { center: [53.0, 28.0], zoom: 4.6, pitch: 42, bearing: 18 },
     title: 'US war with Iran',
     description:

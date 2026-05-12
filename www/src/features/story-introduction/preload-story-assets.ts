@@ -1,5 +1,4 @@
 const STORY_JSON_URLS = {
-  conflictEvents: '/data/conflict-events.json',
   propellantPrices: '/data/propellant-prices.json',
   monthlyIconsGeojson: '/map-geojsons/conflict_monthly_map_icons.geojson',
 } as const
@@ -87,7 +86,6 @@ function loadAudio(url: string): Promise<void> {
 }
 
 export type StoryAssets = {
-  conflictEvents: unknown
   propellantPrices: unknown
   monthlyIconsGeojson: unknown
 }
@@ -100,7 +98,6 @@ export async function preloadStoryAssets(
   if (storyAssetsPromise) return storyAssetsPromise
 
   const tasks: Array<{ label: string; run: () => Promise<unknown> }> = [
-    { label: 'Conflict events', run: () => loadJson(STORY_JSON_URLS.conflictEvents) },
     { label: 'Fuel prices', run: () => loadJson(STORY_JSON_URLS.propellantPrices) },
     { label: 'Monthly icon geojson', run: () => loadJson(STORY_JSON_URLS.monthlyIconsGeojson) },
     ...MAP_ICON_URLS.map((url) => ({
@@ -129,17 +126,12 @@ export async function preloadStoryAssets(
     )
 
     return {
-      conflictEvents: results[0],
-      propellantPrices: results[1],
-      monthlyIconsGeojson: results[2],
+      propellantPrices: results[0],
+      monthlyIconsGeojson: results[1],
     }
   })()
 
   return storyAssetsPromise
-}
-
-export async function getConflictEvents<T>(): Promise<T> {
-  return loadJson<T>(STORY_JSON_URLS.conflictEvents)
 }
 
 export async function getPropellantPrices<T>(): Promise<T> {

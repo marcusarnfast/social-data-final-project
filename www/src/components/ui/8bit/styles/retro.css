@@ -14,3 +14,26 @@
   image-rendering: pixelated;
   image-rendering: crisp-edges;
 }
+
+/* Hard-step “cartridge LED” blink for retro CTAs */
+@keyframes retro-pixel-blink {
+  0%,
+  40% {
+    opacity: 1;
+    filter: brightness(1.08);
+  }
+  45%,
+  50% {
+    opacity: 0.35;
+    filter: brightness(0.75);
+  }
+  55%,
+  100% {
+    opacity: 1;
+    filter: brightness(1.08);
+  }
+}
+
+.retro-pixel-blink {
+  animation: retro-pixel-blink 1.1s step-end infinite;
+}

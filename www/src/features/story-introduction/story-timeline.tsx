@@ -21,6 +21,9 @@ import { getPropellantPrices } from './preload-story-assets'
 type RawPriceRow = { date: string; petrol: number; diesel: number; electric: number }
 type PriceRow = { ts: number; petrol: number; diesel: number }
 
+/** Russia’s full-scale invasion of Ukraine — vertical marker on the fuel chart. */
+const UKRAINE_FULL_INVASION_START_MS = Date.UTC(2022, 1, 24)
+
 const YEAR_TICKS: Array<number> = Array.from(
   { length: STORY_END.getUTCFullYear() - STORY_START.getUTCFullYear() + 1 },
   (_, i) => Date.UTC(STORY_START.getUTCFullYear() + i, 0, 1),
@@ -71,8 +74,8 @@ export function StoryTimeline({
     <div
       className={
         isRetro
-          ? 'retro flex h-full w-full flex-col border-t-[6px] border-amber-200 bg-black px-6 py-3 text-amber-200'
-          : 'flex h-full w-full flex-col bg-black px-6 py-3 text-amber-200'
+          ? 'retro flex h-full min-h-0 w-full flex-col overflow-visible border-t-[6px] border-amber-200 bg-black px-4 py-2 text-amber-200 sm:px-5'
+          : 'flex h-full min-h-0 w-full flex-col overflow-visible bg-black px-4 py-2 text-amber-200 sm:px-5'
       }
     >
       <div className="mb-1 flex shrink-0 items-baseline justify-between">
@@ -95,9 +98,19 @@ export function StoryTimeline({
           {formatMonthYear(currentTs)}
         </span>
       </div>
-      <div className="min-h-0 min-w-0 flex-1">
-        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
-        <LineChart data={data} margin={{ top: 8, right: 16, bottom: 28, left: 4 }}>
+      <div className="relative min-h-0 w-full flex-1 basis-0 overflow-visible py-0.5">
+        <div className="relative min-h-0 h-full w-full">
+        <ResponsiveContainer
+          width="100%"
+          height="100%"
+          minWidth={0}
+          minHeight={0}
+          style={{ overflow: 'visible' }}
+        >
+        <LineChart
+          data={data}
+          margin={{ top: 26, right: 28, bottom: 36, left: 4 }}
+        >
           <CartesianGrid stroke="#3f2d18" strokeDasharray="3 3" vertical={false} />
           <XAxis
             dataKey="ts"
@@ -117,7 +130,7 @@ export function StoryTimeline({
             tick={{ fill: '#fcd34d', fontSize: 10, fontFamily: 'monospace' }}
             tickLine={false}
             axisLine={{ stroke: '#a16207' }}
-            width={32}
+            width={44}
           />
           <Tooltip
             contentStyle={{
@@ -152,6 +165,21 @@ export function StoryTimeline({
             name="diesel"
           />
 
+          <ReferenceLine
+            x={UKRAINE_FULL_INVASION_START_MS}
+            stroke="#fb7185"
+            strokeDasharray="5 4"
+            strokeWidth={1.5}
+            ifOverflow="visible"
+            label={{
+              value: '24 Feb 2022 — invasion',
+              position: 'top',
+              fill: '#fda4af',
+              fontSize: isRetro ? 7 : 10,
+              fontFamily: 'monospace',
+            }}
+          />
+
           {isRetro
             ? null
             : CHAPTERS.map((chapter) => (
@@ -181,6 +209,7 @@ export function StoryTimeline({
           />
         </LineChart>
         </ResponsiveContainer>
+        </div>
       </div>
     </div>
   )

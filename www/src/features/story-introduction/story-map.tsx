@@ -2,70 +2,15 @@
 
 import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
-import type { Chapter } from './chapters'
-import { getConflictEvents, getMonthlyIconGeoJson } from './preload-story-assets'
+import type { Chapter, ChapterMapCamera } from './chapters'
+import { MAP_MONTHLY_EVENT_ICONS } from './map-monthly-event-icons'
+import { getMonthlyIconGeoJson } from './preload-story-assets'
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN as string | undefined
-const SOURCE_ID = 'conflict-events'
-const POINTS_LAYER = 'conflict-events-points'
-const HALO_LAYER = 'conflict-events-halo'
 const MONTHLY_EVENTS_SOURCE_ID = 'monthly-conflict-events'
 const MONTHLY_EVENTS_LAYER = 'monthly-conflict-event-icons'
-
-const MONTHLY_EVENT_ICONS = [
-  { id: 'battles', url: '/map-icons/battles.png' },
-  { id: 'explosions-remote-violence', url: '/map-icons/explosions_remote_violence.png' },
-  { id: 'protest', url: '/map-icons/protests.png' },
-  { id: 'riots', url: '/map-icons/riots.png' },
-  { id: 'strategic-developments', url: '/map-icons/strategic_developments.png' },
-  { id: 'violence-against-civilians', url: '/map-icons/violence_against_civilians.png' },
-] as const
-
-type RawFeatureCollection = {
-  type: 'FeatureCollection'
-  features: Array<{
-    type: 'Feature'
-    geometry: { type: 'Point'; coordinates: [number, number] }
-    properties: {
-      id: string
-      date: string
-      region: string
-      label: string
-      intensity: number
-    }
-  }>
-}
-
-type EnrichedFeatureCollection = {
-  type: 'FeatureCollection'
-  features: Array<{
-    type: 'Feature'
-    geometry: { type: 'Point'; coordinates: [number, number] }
-    properties: {
-      id: string
-      date: string
-      date_ts: number
-      region: string
-      label: string
-      intensity: number
-    }
-  }>
-}
-
-function enrich(raw: RawFeatureCollection): EnrichedFeatureCollection {
-  return {
-    type: 'FeatureCollection',
-    features: raw.features.map((f) => ({
-      ...f,
-      properties: {
-        ...f.properties,
-        date_ts: new Date(f.properties.date).getTime(),
-      },
-    })),
-  }
-}
 
 function prefersReducedMotion(): boolean {
   if (typeof window === 'undefined') return false
@@ -157,6 +102,31 @@ function applyMonthlyData(
   })
 }
 
+function lerp(a: number, b: number, t: number) {
+  return a + (b - a) * t
+}
+
+function resolveExploreFromView(chapter: Chapter): ChapterMapCamera {
+  if (chapter.mapExploreFromView) return chapter.mapExploreFromView
+  const v = chapter.mapView
+  return {
+    center: v.center,
+    zoom: Math.max(1.45, v.zoom - 2.4),
+    pitch: 0,
+    bearing: 0,
+  }
+}
+
+function interpolateExploreCamera(from: ChapterMapCamera, to: ChapterMapCamera, progress: number): ChapterMapCamera {
+  const t = Math.min(1, Math.max(0, progress))
+  return {
+    center: [lerp(from.center[0], to.center[0], t), lerp(from.center[1], to.center[1], t)],
+    zoom: lerp(from.zoom, to.zoom, t),
+    pitch: lerp(from.pitch ?? 0, to.pitch ?? 0, t),
+    bearing: lerp(from.bearing ?? 0, to.bearing ?? 0, t),
+  }
+}
+
 function loadMapImage(map: mapboxgl.Map, id: string, url: string) {
   return new Promise<void>((resolve, reject) => {
     if (map.hasImage(id)) {
@@ -184,9 +154,14 @@ function loadMapImage(map: mapboxgl.Map, id: string, url: string) {
 export function StoryMap({
   currentDate,
   activeChapter,
+  exploreCameraProgress,
+  exploreCameraAnchor,
 }: {
   currentDate: Date
   activeChapter: Chapter | null
+  /** When set with `exploreCameraAnchor`, map camera lerps from chapter intro view → `mapView` with scroll (bidirectional). */
+  exploreCameraProgress?: number
+  exploreCameraAnchor?: Chapter
 }) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const mapRef = useRef<mapboxgl.Map | null>(null)
@@ -197,6 +172,7 @@ export function StoryMap({
   const monthIndexRef = useRef<Map<string, Array<MonthlyFeature>>>(new Map())
   const monthDataReadyRef = useRef(false)
   const lastAppliedMonthRef = useRef<string | null>(null)
+  const [mapReadyToken, setMapReadyToken] = useState(0)
 
   useEffect(() => {
     if (!MAPBOX_TOKEN) return
@@ -228,59 +204,7 @@ export function StoryMap({
       styleReadyRef.current = true
 
       try {
-        const raw = await getConflictEvents<RawFeatureCollection>()
-        const enriched = enrich(raw)
-
-        if (!map.getSource(SOURCE_ID)) {
-          map.addSource(SOURCE_ID, { type: 'geojson', data: enriched })
-        }
-
-        if (!map.getLayer(HALO_LAYER)) {
-          map.addLayer({
-            id: HALO_LAYER,
-            type: 'circle',
-            source: SOURCE_ID,
-            paint: {
-              'circle-radius': [
-                'interpolate',
-                ['linear'],
-                ['get', 'intensity'],
-                1,
-                10,
-                3,
-                22,
-              ],
-              'circle-color': '#ff3b30',
-              'circle-opacity': 0.18,
-              'circle-blur': 0.6,
-            },
-          })
-        }
-
-        if (!map.getLayer(POINTS_LAYER)) {
-          map.addLayer({
-            id: POINTS_LAYER,
-            type: 'circle',
-            source: SOURCE_ID,
-            paint: {
-              'circle-radius': [
-                'interpolate',
-                ['linear'],
-                ['get', 'intensity'],
-                1,
-                3,
-                3,
-                7,
-              ],
-              'circle-color': '#ffb000',
-              'circle-stroke-color': '#ff3b30',
-              'circle-stroke-width': 1.5,
-              'circle-opacity': 0.95,
-            },
-          })
-        }
-
-        await Promise.all(MONTHLY_EVENT_ICONS.map((icon) => loadMapImage(map, icon.id, icon.url)))
+        await Promise.all(MAP_MONTHLY_EVENT_ICONS.map((icon) => loadMapImage(map, icon.id, icon.url)))
 
         if (!map.getSource(MONTHLY_EVENTS_SOURCE_ID)) {
           map.addSource(MONTHLY_EVENTS_SOURCE_ID, {
@@ -306,14 +230,6 @@ export function StoryMap({
           })
         }
 
-        const visibilityFilter: mapboxgl.FilterSpecification = [
-          '<=',
-          ['get', 'date_ts'],
-          currentDateRef.current.getTime(),
-        ]
-        map.setFilter(POINTS_LAYER, visibilityFilter)
-        map.setFilter(HALO_LAYER, visibilityFilter)
-
         void fetchAndIndexMonthly(map, monthIndexRef, monthDataReadyRef, () => {
           applyMonthlyData(
             map,
@@ -323,7 +239,9 @@ export function StoryMap({
           )
         })
       } catch (err) {
-        console.error('Failed to load conflict events', err)
+        console.error('Failed to load map layers or monthly GeoJSON', err)
+      } finally {
+        setMapReadyToken((n) => n + 1)
       }
     })
 
@@ -339,25 +257,44 @@ export function StoryMap({
   useEffect(() => {
     const map = mapRef.current
     if (!map || !styleReadyRef.current) return
-    if (!map.getLayer(POINTS_LAYER)) return
+    if (!map.getSource(MONTHLY_EVENTS_SOURCE_ID)) return
 
-    const visibilityFilter: mapboxgl.FilterSpecification = [
-      '<=',
-      ['get', 'date_ts'],
-      currentDate.getTime(),
-    ]
-    map.setFilter(POINTS_LAYER, visibilityFilter)
-    map.setFilter(HALO_LAYER, visibilityFilter)
-
-    if (monthDataReadyRef.current && map.getSource(MONTHLY_EVENTS_SOURCE_ID)) {
+    if (monthDataReadyRef.current) {
       applyMonthlyData(map, monthIndexRef.current, currentDate, lastAppliedMonthRef)
     }
   }, [currentDate])
 
   useEffect(() => {
     const map = mapRef.current
+    if (!map || mapReadyToken === 0) return
+    if (exploreCameraAnchor == null || exploreCameraProgress === undefined) return
+
+    const from = resolveExploreFromView(exploreCameraAnchor)
+    const to = exploreCameraAnchor.mapView
+    const cam = interpolateExploreCamera(from, to, exploreCameraProgress)
+    map.jumpTo({
+      center: cam.center,
+      zoom: cam.zoom,
+      pitch: cam.pitch ?? 0,
+      bearing: cam.bearing ?? 0,
+    })
+  }, [mapReadyToken, exploreCameraAnchor, exploreCameraProgress])
+
+  useEffect(() => {
+    const map = mapRef.current
     if (!map) return
     if (!activeChapter) return
+
+    const exploreLocksChapterFly =
+      exploreCameraAnchor != null &&
+      exploreCameraProgress !== undefined &&
+      activeChapter.id === exploreCameraAnchor.id
+
+    if (exploreLocksChapterFly) {
+      lastChapterRef.current = activeChapter.id
+      return
+    }
+
     if (lastChapterRef.current === activeChapter.id) return
     lastChapterRef.current = activeChapter.id
 
@@ -380,7 +317,7 @@ export function StoryMap({
       duration: 1800,
       essential: true,
     })
-  }, [activeChapter])
+  }, [activeChapter, exploreCameraAnchor, exploreCameraProgress])
 
   if (!MAPBOX_TOKEN) {
     return (

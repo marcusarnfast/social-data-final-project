@@ -220,16 +220,16 @@ export function FightScrollStage({ onComplete }: { onComplete: () => void }) {
         </div>
 
         <div
-          className="absolute inset-0 z-15 grid grid-rows-[1fr_32%] overflow-hidden transition-opacity duration-500"
+          className="absolute inset-0 z-15 grid grid-rows-[1fr_32%] transition-opacity duration-500"
           style={{ opacity: mapOpacity }}
           aria-hidden={!isMapBeat}
         >
-          <div className="relative min-h-0">
+          <div className="relative min-h-0 overflow-hidden">
             <StoryMap currentDate={currentDate} activeChapter={chapter} />
             <StoryChapterModal chapter={chapter} />
             <div className="pointer-events-none absolute inset-0 bg-black/20" />
           </div>
-          <div className="min-h-0 border-t border-amber-500/45 bg-black/65">
+          <div className="relative min-h-0 h-full overflow-visible border-t border-amber-500/45 bg-black/65">
             <StoryTimeline currentDate={currentDate} />
           </div>
         </div>

@@ -334,14 +334,14 @@ export const FIGHT_SCENE_STORE = {
     {
       title: 'After (background pan)',
       caption: 'Quiet — background only.',
-      backgroundFocusYPercent: 25,
+      backgroundFocusYPercent: 40,
       round: 3,
       extras: { hideFighters: true, hideHud: true },
     },
     {
       title: 'After (background end)',
       caption: 'Quiet — background only.',
-      backgroundFocusYPercent: 35,
+      backgroundFocusYPercent: 40,
       round: 3,
       extras: { hideFighters: true, hideHud: true },
     },

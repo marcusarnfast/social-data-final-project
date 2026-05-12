@@ -5,19 +5,28 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import '~/components/ui/8bit/styles/retro.css'
 
-import { CHAPTERS, type Chapter } from '~/features/story-introduction/chapters'
+import { CHAPTERS } from '~/features/story-introduction/chapters'
+import type { Chapter } from '~/features/story-introduction/chapters'
+import { MapConflictLegend } from '~/features/story-introduction/map-conflict-legend'
+import { MapDataAvailabilityDialog } from '~/features/story-introduction/map-data-availability-dialog'
 import { StoryChapterModal } from '~/features/story-introduction/story-chapter-modal'
 import { StoryMap } from '~/features/story-introduction/story-map'
 import { StoryTimeline } from '~/features/story-introduction/story-timeline'
 
-import { useFight, type FightGestureDelegate } from './fight-context'
+import { useFight } from './fight-context'
+import type { FightGestureDelegate } from './fight-context'
 
 const WHEEL_SENSITIVITY = 1 / 1500
 const TOUCH_SENSITIVITY = 1 / 500
 const PASSTHROUGH_EPSILON = 0.001
+/** Calendar spans longer than this get weaker progress-per-wheel so years don't rush by. */
+const MS_PER_DAY = 86_400_000
+const MAP_SCROLL_REFERENCE_MS = Math.round(2.5 * 365.25 * MS_PER_DAY)
 const INTRO_DISMISS_PROGRESS = 0.06
-/** Progress at which the chapter info card appears + map flies to the pin. */
+/** Default: chapter card + map pin when scroll progress crosses this (non–Russia/Ukraine maps). */
 const CHAPTER_REVEAL_PROGRESS = 0.45
+/** Russia/Ukraine map: chapter dialog when timeline reaches this instant (6 months before full invasion). */
+const UKRAINE_CHAPTER_DIALOG_REVEAL_MS = Date.UTC(2021, 7, 24)
 
 type MapExtras = {
   fightMode: 'map-explore'
@@ -65,11 +74,21 @@ function interpolateState(
   startTs: number,
   endTs: number,
   chapter: Chapter | null,
+  mapChapterId: string | null,
 ): { date: Date; chapter: Chapter | null } {
   const p = Math.min(1, Math.max(0, progress))
   const ts = startTs + (endTs - startTs) * p
-  const activeChapter = p + 1e-9 >= CHAPTER_REVEAL_PROGRESS ? chapter : null
-  return { date: new Date(ts), chapter: activeChapter }
+
+  let showChapter = false
+  if (chapter) {
+    if (mapChapterId === 'russia-ukraine-war') {
+      showChapter = ts + 1e-9 >= UKRAINE_CHAPTER_DIALOG_REVEAL_MS
+    } else {
+      showChapter = p + 1e-9 >= CHAPTER_REVEAL_PROGRESS
+    }
+  }
+
+  return { date: new Date(ts), chapter: showChapter ? chapter : null }
 }
 
 export function FightMapSequence() {
@@ -97,40 +116,6 @@ export function FightMapSequence() {
     }
   }, [isActive, previousFrameIndex, frameIndex, setProgressClamped])
 
-  useEffect(() => {
-    if (!isActive) {
-      registerGestureDelegate(null)
-      return
-    }
-    const delegate: FightGestureDelegate = {
-      onWheel: (deltaY) => {
-        const current = progressRef.current
-        const next = current + deltaY * WHEEL_SENSITIVITY
-        if (next < -PASSTHROUGH_EPSILON && current <= 0) return 'pass'
-        if (next > 1 + PASSTHROUGH_EPSILON && current >= 1) return 'pass'
-        setProgressClamped(next)
-        return 'consume'
-      },
-      onTouchDelta: (deltaY) => {
-        const current = progressRef.current
-        const next = current + deltaY * TOUCH_SENSITIVITY
-        if (next < -PASSTHROUGH_EPSILON && current <= 0) return 'pass'
-        if (next > 1 + PASSTHROUGH_EPSILON && current >= 1) return 'pass'
-        setProgressClamped(next)
-        return 'consume'
-      },
-      onStep: (direction) => {
-        const current = progressRef.current
-        if (direction === 1 && current >= 1) return 'pass'
-        if (direction === -1 && current <= 0) return 'pass'
-        setProgressClamped(current + direction * 0.2)
-        return 'consume'
-      },
-    }
-    registerGestureDelegate(delegate)
-    return () => registerGestureDelegate(null)
-  }, [isActive, registerGestureDelegate, setProgressClamped])
-
   const chapter = useMemo<Chapter | null>(() => {
     if (!mapExtras) return null
     return CHAPTERS.find((c) => c.id === mapExtras.mapChapterId) ?? null
@@ -145,30 +130,95 @@ export function FightMapSequence() {
     [mapExtras],
   )
 
+  const spanMs = Math.max(1, endTs - startTs)
+  /** Long timelines (e.g. Round 1 map) need more scroll per % progress than short windows. */
+  const scrollSpanScale = Math.min(1, MAP_SCROLL_REFERENCE_MS / spanMs)
+
+  useEffect(() => {
+    if (!isActive) {
+      registerGestureDelegate(null)
+      return
+    }
+    const delegate: FightGestureDelegate = {
+      onWheel: (deltaY) => {
+        const current = progressRef.current
+        const next = current + deltaY * WHEEL_SENSITIVITY * scrollSpanScale
+        if (next < -PASSTHROUGH_EPSILON && current <= 0) return 'pass'
+        if (next > 1 + PASSTHROUGH_EPSILON && current >= 1) return 'pass'
+        setProgressClamped(next)
+        return 'consume'
+      },
+      onTouchDelta: (deltaY) => {
+        const current = progressRef.current
+        const next = current + deltaY * TOUCH_SENSITIVITY * scrollSpanScale
+        if (next < -PASSTHROUGH_EPSILON && current <= 0) return 'pass'
+        if (next > 1 + PASSTHROUGH_EPSILON && current >= 1) return 'pass'
+        setProgressClamped(next)
+        return 'consume'
+      },
+      onStep: (direction) => {
+        const current = progressRef.current
+        if (direction === 1 && current >= 1) return 'pass'
+        if (direction === -1 && current <= 0) return 'pass'
+        setProgressClamped(current + direction * 0.2 * scrollSpanScale)
+        return 'consume'
+      },
+    }
+    registerGestureDelegate(delegate)
+    return () => registerGestureDelegate(null)
+  }, [isActive, registerGestureDelegate, scrollSpanScale, setProgressClamped])
+
   const { date, chapter: activeChapter } = useMemo(
-    () => interpolateState(progress, startTs, endTs, chapter),
-    [progress, startTs, endTs, chapter],
+    () => interpolateState(progress, startTs, endTs, chapter, mapExtras?.mapChapterId ?? null),
+    [progress, startTs, endTs, chapter, mapExtras?.mapChapterId],
   )
 
   const intro = mapExtras ? INTRO_COPY[mapExtras.mapChapterId] ?? null : null
   const showIntro = isActive && progress < INTRO_DISMISS_PROGRESS && intro !== null
 
-  if (!isActive || !mapExtras) return null
+  if (!isActive) return null
 
   return (
     <div className="absolute inset-0 z-30">
-      <div className="absolute inset-0 grid grid-rows-[1fr_minmax(120px,30%)] overflow-hidden bg-black">
-        <div className="relative min-h-0">
-          <StoryMap currentDate={date} activeChapter={activeChapter} />
+      <div className="absolute inset-0 grid grid-rows-[1fr_minmax(120px,30%)] bg-black">
+        <div className="relative min-h-0 overflow-hidden">
+          <StoryMap
+            currentDate={date}
+            activeChapter={activeChapter}
+            exploreCameraProgress={chapter ? progress : undefined}
+            exploreCameraAnchor={chapter ?? undefined}
+          />
           <StoryChapterModal chapter={activeChapter} variant="retro" />
-          <ProgressBar progress={progress} />
+          <MapDataAvailabilityDialog variant="retro" />
+          <FightMapHud progress={progress} />
         </div>
-        <div className="min-h-0 border-t-[6px] border-amber-200">
+        <div className="relative min-h-0 h-full overflow-visible border-t-[6px] border-amber-200">
           <StoryTimeline currentDate={date} variant="retro" />
         </div>
       </div>
 
-      <AnimatePresence>{showIntro && intro ? <IntroOverlay {...intro} /> : null}</AnimatePresence>
+      <AnimatePresence>{showIntro ? <IntroOverlay {...intro} /> : null}</AnimatePresence>
+    </div>
+  )
+}
+
+function FightMapHud({ progress }: { progress: number }) {
+  return (
+    <div className="pointer-events-none absolute left-4 top-4 z-20 flex max-h-[min(48vh,calc(100%-5.5rem))] max-w-[min(240px,46vw)] flex-col gap-2 sm:left-5 sm:top-4">
+      <div className="retro flex shrink-0 items-center gap-[6px]">
+        <span className="text-[8px] uppercase tracking-[0.22em] text-amber-200">
+          {(progress * 100).toFixed(0)}%
+        </span>
+        <div className="relative h-[10px] w-[140px] border-2 border-amber-200 bg-black">
+          <div
+            className="absolute inset-y-0 left-0 bg-amber-300 transition-[width] duration-100"
+            style={{ width: `${progress * 100}%` }}
+          />
+        </div>
+      </div>
+      <div className="min-h-0 shrink overflow-y-auto pr-0.5">
+        <MapConflictLegend />
+      </div>
     </div>
   )
 }
@@ -201,18 +251,3 @@ function IntroOverlay({ eyebrow, title, body }: IntroCopy) {
   )
 }
 
-function ProgressBar({ progress }: { progress: number }) {
-  return (
-    <div className="retro pointer-events-none absolute left-5 bottom-4 z-20 flex items-center gap-[6px]">
-      <span className="text-[8px] uppercase tracking-[0.22em] text-amber-200">
-        {(progress * 100).toFixed(0)}%
-      </span>
-      <div className="relative h-[10px] w-[140px] border-2 border-amber-200 bg-black">
-        <div
-          className="absolute inset-y-0 left-0 bg-amber-300 transition-[width] duration-100"
-          style={{ width: `${progress * 100}%` }}
-        />
-      </div>
-    </div>
-  )
-}
